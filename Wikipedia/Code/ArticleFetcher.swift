@@ -65,63 +65,51 @@ final public class ArticleFetcher: Fetcher {
 private extension ArticleFetcher {
     
     func fetchOfflineResourceURLs(with url: URL, siteURL: URL, completion: @escaping (Result<[URL], Error>) -> Void) -> URLSessionTask? {
-        return session.jsonDecodableTask(with: url) { (urlStrings: [String]?, response: URLResponse?, error: Error?) in
+        return session.jsonDecodableTask(with: url) { (result: Result<[String], Error>, response: URLResponse?) in
             if let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode == 404 {
                 completion(.failure(ArticleFetcherError.doesNotExist))
                 return
             }
-            
-            if let error = error {
-               completion(.failure(error))
-               return
-           }
-            
-            guard let urlStrings = urlStrings else {
-                completion(.failure(ArticleFetcherError.missingData))
-                return
+            switch result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success(let urlStrings):
+                let result = urlStrings.map { (urlString) -> URL? in
+                               let scheme = siteURL.scheme ?? "https"
+                               let finalString = "\(scheme):\(urlString)"
+                               return URL(string: finalString)
+                           }.compactMap{ $0 }
+                           
+                           completion(.success(result))
             }
-            
-            let result = urlStrings.map { (urlString) -> URL? in
-                let scheme = siteURL.scheme ?? "https"
-                let finalString = "\(scheme):\(urlString)"
-                return URL(string: finalString)
-            }.compactMap{ $0 }
-            
-            completion(.success(result))
         }
     }
     
     func fetchMediaListURLs(with url: URL, siteURL: URL, completion: @escaping (Result<[URL], Error>) -> Void) -> URLSessionTask? {
         
-        return session.jsonDecodableTask(with: url) { (mediaList: MediaList?, response: URLResponse?, error: Error?) in
+        return session.jsonDecodableTask(with: url) { (result: Result<MediaList, Error>, response: URLResponse?) in
             if let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode == 404 {
                 completion(.failure(ArticleFetcherError.doesNotExist))
                 return
             }
             
-            if let error = error {
-               completion(.failure(error))
-               return
-           }
-            
-            guard let mediaList = mediaList else {
-                completion(.failure(ArticleFetcherError.missingData))
-                return
+            switch result {
+            case .failure(let error):               completion(.failure(error))
+            case .success(let mediaList):
+                let sources = mediaList.items.flatMap { (item) -> [MediaListItemSource] in
+                    return item.sources ?? []
+                }
+                
+                let urls = sources.map { (source) -> URL? in
+                    let scheme = siteURL.scheme ?? "https"
+                    let finalString = "\(scheme):\(source.urlString)"
+                    return URL(string: finalString)
+                }.compactMap{ $0 }
+                
+                completion(.success(urls))
             }
-            
-            let sources = mediaList.items.flatMap { (item) -> [MediaListItemSource] in
-                return item.sources ?? []
-            }
-            
-            let result = sources.map { (source) -> URL? in
-                let scheme = siteURL.scheme ?? "https"
-                let finalString = "\(scheme):\(source.urlString)"
-                return URL(string: finalString)
-            }.compactMap{ $0 }
-            
-            completion(.success(result))
         }
     }
     

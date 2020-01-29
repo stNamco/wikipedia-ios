@@ -65,18 +65,17 @@ public enum ArticleDescriptionSource: String {
             completion(WikidataPublishingError.notEditable)
             return
         }
-        let requestWithCSRFCompletion: (WikidataAPIResult?, URLResponse?, Bool?, Error?) -> Void = { result, response, authorized, error in
-            if let error = error {
-                completion(error)
+        let requestWithCSRFCompletion: (Result<WikidataAPIResult, Error>, URLResponse?, Bool?) -> Void = { result, response, authorized in
+            var error: Error? = nil
+            switch result {
+            case .failure(let resultError):
+                error = resultError
+                completion(resultError)
+            case .success(let wikidataResult):
+                error = wikidataResult.error
+                completion(wikidataResult.error)
             }
-            guard let result = result else {
-                completion(WikidataPublishingError.apiResultNotParsedCorrectly)
-                return
-            }
-
-            completion(result.error)
-
-            if let authorized = authorized, authorized, result.error == nil {
+            if let authorized = authorized, authorized, error == nil {
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: WikidataDescriptionEditingController.DidMakeAuthorizedWikidataDescriptionEditNotification, object: nil)
                 }
@@ -90,8 +89,14 @@ public enum ArticleDescriptionSource: String {
             "formatversion": "2"]
 
         let languageCodeComponents = configuration.mediaWikiAPIURLForWikiLanguage(language, with: languageCodeParameters)
-        session.jsonDecodableTask(with: languageCodeComponents.url) { (siteInfo: MediaWikiSiteInfoResult?, response, error) in
-            let normalizedLanguage = siteInfo?.query.general.lang ?? "en"
+        session.jsonDecodableTask(with: languageCodeComponents.url) { (result: Result<MediaWikiSiteInfoResult, Error>, response) in
+            var normalizedLanguage: String = "en"
+            switch result {
+            case .failure(let error):
+                completion(error)
+            case .success(let siteInfo):
+                normalizedLanguage = siteInfo.query.general.lang
+            }
             let queryParameters = ["action": "wbsetdescription",
                                    "format": "json",
                                    "formatversion": "2"]
@@ -106,8 +111,8 @@ public enum ArticleDescriptionSource: String {
                                           "id": wikidataID,
                                           "value": newWikidataDescription,
                                           "token": token.value]
-                    self.session.jsonDecodableTask(with: components.url, method: .post, bodyParameters: bodyParameters, bodyEncoding: .form) { (result: WikidataAPIResult?, response, error) in
-                        requestWithCSRFCompletion(result, response, token.isAuthorized, error)
+                    self.session.jsonDecodableTask(with: components.url, method: .post, bodyParameters: bodyParameters, bodyEncoding: .form) { (result: Result<WikidataAPIResult, Error>, response) in
+                        requestWithCSRFCompletion(result, response, token.isAuthorized)
                     }
                 }
             }

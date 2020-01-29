@@ -95,8 +95,13 @@ public class ArticleSummaryFetcher: Fetcher {
         
         var cancellationKeys: [String] = []
         articleKeys.asyncMapToDictionary(block: { (articleKey, asyncMapCompletion) in
-            let key = fetchSummaryForArticle(with: articleKey, priority: priority, completion: { (responseObject, response, error) in
-                asyncMapCompletion(articleKey, responseObject)
+            let key = fetchSummaryForArticle(with: articleKey, priority: priority, completion: { (result, response) in
+                switch result {
+                case .success(let summary):
+                    asyncMapCompletion(articleKey, summary)
+                case .failure:
+                    asyncMapCompletion(articleKey, nil)
+                }
             })
             if let key = key {
                 cancellationKeys.append(key)
@@ -106,21 +111,17 @@ public class ArticleSummaryFetcher: Fetcher {
         return cancellationKeys
     }
     
-    @objc(fetchSummaryForArticleWithKey:priority:completion:)
-    @discardableResult public func fetchSummaryForArticle(with articleKey: String, priority: Float = URLSessionTask.defaultPriority, completion: @escaping (ArticleSummary?, URLResponse?, Error?) -> Swift.Void) -> CancellationKey? {
+    @discardableResult public func fetchSummaryForArticle(with articleKey: String, priority: Float = URLSessionTask.defaultPriority, completion: @escaping (Result<ArticleSummary, Error>, URLResponse?) -> Swift.Void) -> CancellationKey? {
         guard
             let articleURL = URL(string: articleKey),
             let title = articleURL.percentEncodedPageTitleForPathComponents
         else {
-            completion(nil, nil, Fetcher.invalidParametersError)
+            completion(.failure(Fetcher.invalidParametersError), nil)
             return nil
         }
         
         let pathComponents = ["page", "summary", title]
-        let key = performMobileAppsServicesGET(for: articleURL, pathComponents: pathComponents, priority: priority, cancellationKey: articleKey) { (summary: ArticleSummary?, response: URLResponse?, error: Error?) in
-            completion(summary, response, error)
-        }
-        
+        let key = performMobileAppsServicesGET(for: articleURL, pathComponents: pathComponents, priority: priority, cancellationKey: articleKey, completionHandler: completion)
         return key
     }
 }

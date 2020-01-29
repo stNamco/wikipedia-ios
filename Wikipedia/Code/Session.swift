@@ -321,26 +321,26 @@ import Foundation
      - response: The URLResponse
      - error: Any network or parsing error
      */
-    @discardableResult public func jsonDecodableTask<T: Decodable>(with url: URL?, method: Session.Request.Method = .get, bodyParameters: Any? = nil, bodyEncoding: Session.Request.Encoding = .json, headers: [String: String] = [:], priority: Float = URLSessionTask.defaultPriority, completionHandler: @escaping (_ result: T?, _ response: URLResponse?,  _ error: Error?) -> Swift.Void) -> URLSessionDataTask? {
+    @discardableResult public func jsonDecodableTask<T: Decodable>(with url: URL?, method: Session.Request.Method = .get, bodyParameters: Any? = nil, bodyEncoding: Session.Request.Encoding = .json, headers: [String: String] = [:], priority: Float = URLSessionTask.defaultPriority, completionHandler: @escaping (_ result: Result<T, Error>, _ response: URLResponse?) -> Swift.Void) -> URLSessionDataTask? {
         guard let task = dataTask(with: url, method: method, bodyParameters: bodyParameters, bodyEncoding: bodyEncoding, headers: headers, priority: priority, completionHandler: { (data, response, error) in
             self.handleResponse(response)
             guard let data = data else {
-                completionHandler(nil, response, error)
+                completionHandler(.failure(error ?? RequestError.unexpectedResponse), response)
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                completionHandler(nil, response, nil)
+                completionHandler(.failure(RequestError.unexpectedResponse), response)
                 return
             }
             do {
                 let result: T = try self.jsonDecodeData(data: data)
-                completionHandler(result, response, error)
+                completionHandler(.success(result), response)
             } catch let resultParsingError {
                 DDLogError("Error parsing codable response: \(resultParsingError)")
-                completionHandler(nil, response, resultParsingError)
+                completionHandler(.failure(RequestError.unexpectedResponse), response)
             }
         }) else {
-            completionHandler(nil, nil, RequestError.invalidParameters)
+            completionHandler(.failure(RequestError.invalidParameters), nil)
             return nil
         }
         task.resume()

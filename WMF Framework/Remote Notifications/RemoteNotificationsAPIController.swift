@@ -119,13 +119,14 @@ class RemoteNotificationsAPIController: Fetcher {
     }
 
     public func getAllUnreadNotifications(from subdomains: [String], completion: @escaping (Set<NotificationsResult.Notification>?, Error?) -> Void) {
-        let completion: (NotificationsResult?, URLResponse?, Error?) -> Void = { result, _, error in
-            guard error == nil else {
+        let completion: (Result<NotificationsResult, Error>, URLResponse?) -> Void = { result, error in
+            switch result {
+            case .failure(let error):
                 completion([], error)
-                return
+            case .success(let notificationsResult):
+                let notifications = self.notifications(from: notificationsResult)
+                completion(notifications, nil)
             }
-            let notifications = self.notifications(from: result)
-            completion(notifications, result?.error)
         }
         request(Query.notifications(from: subdomains, limit: .max, filter: .unread), completion: completion)
     }
@@ -136,25 +137,21 @@ class RemoteNotificationsAPIController: Fetcher {
         let split = notifications.chunked(into: maxNumberOfNotificationsPerRequest)
 
         split.asyncCompactMap({ (notifications, completion: @escaping (Error?) -> Void) in
-            request(Query.markAsRead(notifications: notifications), method: .post) { (result: MarkReadResult?, _, error) in
-                if let error = error {
+            request(Query.markAsRead(notifications: notifications), method: .post) { (result: Result<MarkReadResult, Error>, _) in
+                switch result {
+                case .failure(let error):
                     completion(error)
-                    return
+                case .success(let markReadResult):
+                    if let error = markReadResult.error {
+                        completion(error)
+                        return
+                    }
+                    if !markReadResult.succeeded {
+                        completion(MarkReadError.unknown)
+                        return
+                    }
+                    completion(nil)
                 }
-                guard let result = result else {
-                    assertionFailure("Expected result; make sure MarkReadResult maps the expected result correctly")
-                    completion(MarkReadError.noResult)
-                    return
-                }
-                if let error = result.error {
-                    completion(error)
-                    return
-                }
-                if !result.succeeded {
-                    completion(MarkReadError.unknown)
-                    return
-                }
-                completion(nil)
             }
         }) { (errors) in
             if errors.isEmpty {
@@ -166,7 +163,7 @@ class RemoteNotificationsAPIController: Fetcher {
         }
     }
 
-    private func request<T: Decodable>(_ queryParameters: Query.Parameters?, method: Session.Request.Method = .get, completion: @escaping (T?, URLResponse?, Error?) -> Void) {
+    private func request<T: Decodable>(_ queryParameters: Query.Parameters?, method: Session.Request.Method = .get, completion: @escaping (Result<T, Error>, URLResponse?) -> Void) {
         var components = NotificationsAPI.components
         components.replacePercentEncodedQueryWithQueryParameters(queryParameters)
         if method == .get {
@@ -175,7 +172,7 @@ class RemoteNotificationsAPIController: Fetcher {
             requestMediaWikiAPIAuthToken(for: components.url, type: .csrf) { (result) in
                 switch result {
                 case .failure(let error):
-                    completion(nil, nil, error)
+                    completion(.failure(error), nil)
                 case .success(let token):
                     self.session.jsonDecodableTask(with: components.url, method: method, bodyParameters: ["token": token], bodyEncoding: .form, completionHandler: completion)
                 }

@@ -114,27 +114,22 @@ open class Fetcher: NSObject {
     @discardableResult public func performDecodableMediaWikiAPIGET<T: Decodable>(for URL: URL?, with queryParameters: [String: Any]?, cancellationKey: CancellationKey? = nil, completionHandler: @escaping (Result<T, Error>) -> Swift.Void) -> CancellationKey? {
         let components = configuration.mediaWikiAPIURLForHost(URL?.host, with: queryParameters)
         let key = cancellationKey ?? UUID().uuidString
-        let task = session.jsonDecodableTask(with: components.url) { (result: T?, response: URLResponse?, error: Error?) in
-            guard let result = result else {
-                let error = error ?? RequestError.unexpectedResponse
-                completionHandler(.failure(error))
-                return
-            }
-            completionHandler(.success(result))
+        let task = session.jsonDecodableTask(with: components.url) { (result: Result<T, Error>, response: URLResponse?) in
+            completionHandler(result)
             self.untrack(taskFor: key)
         }
         track(task: task, for: key)
         return key
     }
     
-    @discardableResult public func performMobileAppsServicesGET<T: Decodable>(for URL: URL?, pathComponents: [String], priority: Float = URLSessionTask.defaultPriority, cancellationKey: CancellationKey? = nil, completionHandler: @escaping (_ result: T?, _ response: URLResponse?,  _ error: Error?) -> Swift.Void) -> CancellationKey? {
+    @discardableResult public func performMobileAppsServicesGET<T: Decodable>(for URL: URL?, pathComponents: [String], priority: Float = URLSessionTask.defaultPriority, cancellationKey: CancellationKey? = nil, completionHandler: @escaping (_ result: Result<T, Error>, _ response: URLResponse?) -> Swift.Void) -> CancellationKey? {
         
         //The accept profile is case sensitive https://gerrit.wikimedia.org/r/#/c/356429/
         let headers = ["Accept": "application/json; charset=utf-8; profile=\"https://www.mediawiki.org/wiki/Specs/Summary/1.1.2\""]
         let taskURL = configuration.wikipediaMobileAppsServicesAPIURLComponentsForHost(URL?.host, appending: pathComponents).url
         let key = cancellationKey ?? UUID().uuidString
-        let task = session.jsonDecodableTask(with: taskURL, headers: headers, priority: priority) { (result: T?, response: URLResponse?, error: Error?) in
-            completionHandler(result, response, error)
+        let task = session.jsonDecodableTask(with: taskURL, headers: headers, priority: priority) { (result: Result<T, Error>, response: URLResponse?) in
+            completionHandler(result, response)
             self.untrack(taskFor: key)
         }
         track(task: task, for: key)

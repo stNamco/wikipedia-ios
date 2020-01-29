@@ -747,14 +747,15 @@ internal class ReadingListsSyncOperation: ReadingListsOperation {
                     articlesByKey[articleKey] = article
                 } else {
                     group.enter()
-                    summaryFetcher.fetchSummaryForArticle(with: articleKey, completion: { (result, response, error) in
-                        guard let result = result else {
-                            group.leave()
-                            return
+                    summaryFetcher.fetchSummaryForArticle(with: articleKey, completion: { (result, response) in
+                        switch result {
+                        case .success(let summary):
+                            semaphore.wait()
+                            articleSummariesByArticleKey[articleKey] = summary
+                            semaphore.signal()
+                        default:
+                            break
                         }
-                        semaphore.wait()
-                        articleSummariesByArticleKey[articleKey] = result
-                        semaphore.signal()
                         group.leave()
                     })
                     entryCount += 1

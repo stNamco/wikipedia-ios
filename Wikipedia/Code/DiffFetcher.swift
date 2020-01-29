@@ -21,7 +21,7 @@ class DiffFetcher: Fetcher {
             return
         }
         
-        session.jsonDecodableTask(with: url) { (result: DiffResponse?, urlResponse: URLResponse?, error: Error?) in
+        session.jsonDecodableTask(with: url) { (result: <DiffResponse, Error>, urlResponse: URLResponse?, error: Error?) in
             
             guard let result = result else {
                 completion(.failure(DiffError.missingDiffResponseFailure))

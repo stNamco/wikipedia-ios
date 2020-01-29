@@ -8,16 +8,18 @@ public final class RandomArticleFetcher: Fetcher {
             completion(Fetcher.invalidParametersError, nil, nil)
             return
         }
-        session.jsonDecodableTask(with: taskURL) { (summary: ArticleSummary?, response, error) in
-            if let error = error {
+        session.jsonDecodableTask(with: taskURL) { (result: Result<ArticleSummary, Error>, response) in
+            
+            switch result {
+            case .success(let summary):
+                guard let articleURL = summary.articleURL else {
+                    completion(Fetcher.unexpectedResponseError, nil, nil)
+                    return
+                }
+                completion(nil, articleURL, summary)
+            case .failure(let error):
                 completion(error, nil, nil)
-                return
             }
-            guard let articleURL = summary?.articleURL else {
-                completion(Fetcher.unexpectedResponseError, nil, nil)
-                return
-            }
-            completion(nil, articleURL, summary)
         }
     }
 }
