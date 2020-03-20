@@ -1,8 +1,9 @@
 @import Foundation;
 @import CoreLocation;
 @import Mantle;
+#import <WMF/WMFSecureCodingMTLModel.h>
 
-@interface MWKSearchResult : MTLModel <MTLJSONSerializing>
+@interface MWKSearchResult : WMFSecureCodingMTLModel <MTLJSONSerializing>
 
 @property (nonatomic, assign, readonly) NSInteger articleID;
 
