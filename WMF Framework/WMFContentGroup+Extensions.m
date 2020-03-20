@@ -242,7 +242,7 @@
     self.siteURLString = siteURL.wmf_databaseKey;
 }
 
-- (void)setFullContentObject:(NSObject<NSSecureCoding> *)fullContentObject {
+- (void)setFullContentObject:(NSObject<NSCoding> *)fullContentObject {
     NSManagedObjectContext *moc = self.managedObjectContext;
     NSAssert(moc != nil, @"nil moc");
     if (!moc) {
@@ -332,7 +332,7 @@
         case WMFContentGroupKindNews:
         case WMFContentGroupKindUnknown:
         default: {
-            id<NSSecureCoding> firstObject = contentArray.firstObject ?: content;
+            id<NSCoding> firstObject = contentArray.firstObject ?: content;
             if (firstObject) {
                 self.contentPreview = firstObject;
             }
