@@ -1,18 +1,63 @@
 import Foundation
 
-protocol CollectionViewUpdaterDelegate: NSObjectProtocol {
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView)
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView)
+protocol LegacyCollectionViewUpdaterDelegate: NSObjectProtocol {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView)
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView)
 }
 
-class CollectionViewUpdater<T: NSFetchRequestResult>: NSObject, NSFetchedResultsControllerDelegate {
+
+protocol CollectionViewUpdater: NSObjectProtocol {
+    var isSlidingNewContentInFromTheTopEnabled: Bool { get set }
+    var isGranularUpdatingEnabled: Bool { get set }
+    var delegate: LegacyCollectionViewUpdaterDelegate? { get set }
+    func performFetch()
+}
+
+@available(iOS 13, *)
+class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, CollectionViewUpdater, NSFetchedResultsControllerDelegate {
+    var isSlidingNewContentInFromTheTopEnabled: Bool = false
+    var isGranularUpdatingEnabled: Bool = false
+    var delegate: LegacyCollectionViewUpdaterDelegate?
+    
+    private let collectionView: UICollectionView
+    let fetchedResultsController: NSFetchedResultsController<T>
+    let diffableDataSourceReference: UICollectionViewDiffableDataSourceReference
+    
+    required init(fetchedResultsController: NSFetchedResultsController<T>,
+                  collectionView: UICollectionView,
+                  cellProvider: @escaping UICollectionViewDiffableDataSourceReferenceCellProvider,
+                  supplementaryViewProvider: @escaping UICollectionViewDiffableDataSourceReferenceSupplementaryViewProvider) {
+        self.fetchedResultsController = fetchedResultsController
+        self.collectionView = collectionView
+        self.diffableDataSourceReference = UICollectionViewDiffableDataSourceReference(collectionView: collectionView, cellProvider: cellProvider)
+        self.diffableDataSourceReference.supplementaryViewProvider = supplementaryViewProvider
+        super.init()
+        self.fetchedResultsController.delegate = self
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
+    }
+    
+    func performFetch() {
+        do {
+            try fetchedResultsController.performFetch()
+        } catch let error {
+            assert(false)
+            DDLogError("Error fetching \(String(describing: fetchedResultsController.fetchRequest.predicate)) for \(String(describing: self.delegate)): \(error)")
+        }
+        collectionView.reloadData()
+    }
+}
+
+class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, CollectionViewUpdater, NSFetchedResultsControllerDelegate {
     
     let fetchedResultsController: NSFetchedResultsController<T>
     let collectionView: UICollectionView
     var isSlidingNewContentInFromTheTopEnabled: Bool = false
     var sectionChanges: [WMFSectionChange] = []
     var objectChanges: [WMFObjectChange] = []
-    weak var delegate: CollectionViewUpdaterDelegate?
+    weak var delegate: LegacyCollectionViewUpdaterDelegate?
     
     var isGranularUpdatingEnabled: Bool = true // when set to false, individual updates won't be pushed to the collection view, only reloadData()
     
@@ -37,6 +82,8 @@ class CollectionViewUpdater<T: NSFetchRequestResult>: NSObject, NSFetchedResults
         sectionCounts = fetchSectionCounts()
         collectionView.reloadData()
     }
+    
+    // MARK: Updates
     
     @objc func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         sectionChanges = []

@@ -8,7 +8,7 @@ protocol ReadingListEntryCollectionViewControllerDelegate: NSObjectProtocol {
 class ReadingListEntryCollectionViewController: ColumnarCollectionViewController, EditableCollection, UpdatableCollection, SearchableCollection, ActionDelegate, EventLoggingEventValuesProviding {
     let dataStore: MWKDataStore
     var fetchedResultsController: NSFetchedResultsController<ReadingListEntry>?
-    var collectionViewUpdater: CollectionViewUpdater<ReadingListEntry>?
+    var collectionViewUpdater: LegacyCollectionViewUpdater<ReadingListEntry>?
     let readingList: ReadingList
     var searchString: String?
     
@@ -68,7 +68,7 @@ class ReadingListEntryCollectionViewController: ColumnarCollectionViewController
     
     override func viewWillAppear(_ animated: Bool) {
         setupFetchedResultsController()
-        setupCollectionViewUpdater()
+        setupLegacyCollectionViewUpdater()
         fetch()
         super.viewWillAppear(animated)
     }
@@ -487,10 +487,10 @@ extension ReadingListEntryCollectionViewController: SortableCollection {
     }
 }
 
-// MARK: - CollectionViewUpdaterDelegate
+// MARK: - LegacyCollectionViewUpdaterDelegate
 
-extension ReadingListEntryCollectionViewController: CollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+extension ReadingListEntryCollectionViewController: LegacyCollectionViewUpdaterDelegate {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? SavedArticlesCollectionViewCell,
                 let entry = entry(at: indexPath) else {
@@ -503,7 +503,7 @@ extension ReadingListEntryCollectionViewController: CollectionViewUpdaterDelegat
         delegate?.readingListEntryCollectionViewController(self, didUpdate: collectionView)
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         
     }
 }

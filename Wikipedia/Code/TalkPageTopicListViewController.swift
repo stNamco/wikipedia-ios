@@ -18,7 +18,7 @@ class TalkPageTopicListViewController: ColumnarCollectionViewController {
     
     private let reuseIdentifier = "TalkPageTopicCell"
     
-    private var collectionViewUpdater: CollectionViewUpdater<TalkPageTopic>!
+    private var collectionViewUpdater: LegacyCollectionViewUpdater<TalkPageTopic>!
     private var cellLayoutEstimate: ColumnarCollectionViewLayoutHeightEstimate?
     
     private let siteURL: URL
@@ -53,7 +53,7 @@ class TalkPageTopicListViewController: ColumnarCollectionViewController {
         
         isRefreshControlEnabled = true
         registerCells()
-        setupCollectionViewUpdater()
+        setupLegacyCollectionViewUpdater()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -166,8 +166,8 @@ private extension TalkPageTopicListViewController {
         layoutManager.register(TalkPageTopicCell.self, forCellWithReuseIdentifier: reuseIdentifier, addPlaceholder: true)
     }
     
-    func setupCollectionViewUpdater() {
-        collectionViewUpdater = CollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+    func setupLegacyCollectionViewUpdater() {
+        collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
         collectionViewUpdater?.delegate = self
         collectionViewUpdater?.performFetch()
     }
@@ -188,10 +188,10 @@ private extension TalkPageTopicListViewController {
     }
 }
 
-//MARK: CollectionViewUpdaterDelegate
+//MARK: LegacyCollectionViewUpdaterDelegate
 
-extension TalkPageTopicListViewController: CollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) where T : NSFetchRequestResult {
+extension TalkPageTopicListViewController: LegacyCollectionViewUpdaterDelegate {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) where T : NSFetchRequestResult {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? TalkPageTopicCell else {
                 continue
@@ -201,7 +201,7 @@ extension TalkPageTopicListViewController: CollectionViewUpdaterDelegate {
         }
     }
     
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) where T : NSFetchRequestResult {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) where T : NSFetchRequestResult {
         //no-op
     }
 }

@@ -74,7 +74,7 @@ class HistoryViewController: ArticleFetchedResultsViewController {
         header.layoutMargins = layout.itemLayoutMargins
     }
     
-    override func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+    override func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
         super.collectionViewUpdater(updater, didUpdate: collectionView)
         updateVisibleHeaders()
     }

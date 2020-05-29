@@ -17,7 +17,7 @@ class TalkPageReplyListViewController: ColumnarCollectionViewController {
     
     private let reuseIdentifier = "TalkPageReplyCell"
     
-    private var collectionViewUpdater: CollectionViewUpdater<TalkPageReply>!
+    private var collectionViewUpdater: LegacyCollectionViewUpdater<TalkPageReply>!
 
     private lazy var beKindInputAccessoryView: BeKindInputAccessoryView = BeKindInputAccessoryView.wmf_viewFromClassNib()
     
@@ -111,7 +111,7 @@ class TalkPageReplyListViewController: ColumnarCollectionViewController {
 
         isRefreshControlEnabled = true
         registerCells()
-        setupCollectionViewUpdater()
+        setupLegacyCollectionViewUpdater()
         setupBackgroundTap()
         setupNavigationBar()
         
@@ -275,10 +275,10 @@ class TalkPageReplyListViewController: ColumnarCollectionViewController {
     }
 }
 
-//MARK: CollectionViewUpdaterDelegate
+//MARK: LegacyCollectionViewUpdaterDelegate
 
-extension TalkPageReplyListViewController: CollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) where T : NSFetchRequestResult {
+extension TalkPageReplyListViewController: LegacyCollectionViewUpdaterDelegate {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) where T : NSFetchRequestResult {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? TalkPageTopicCell,
                 let title = fetchedResultsController.object(at: indexPath).text else {
@@ -289,7 +289,7 @@ extension TalkPageReplyListViewController: CollectionViewUpdaterDelegate {
         }
     }
     
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) where T : NSFetchRequestResult {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) where T : NSFetchRequestResult {
         //no-op
     }
 }
@@ -303,8 +303,8 @@ private extension TalkPageReplyListViewController {
         layoutManager.register(TalkPageReplyFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: TalkPageReplyFooterView.identifier, addPlaceholder: true)
     }
     
-    func setupCollectionViewUpdater() {
-        collectionViewUpdater = CollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+    func setupLegacyCollectionViewUpdater() {
+        collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
         collectionViewUpdater?.delegate = self
         collectionViewUpdater?.performFetch()
     }

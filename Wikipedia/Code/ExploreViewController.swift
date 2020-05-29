@@ -1,7 +1,7 @@
 import UIKit
 import WMF
 
-class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewControllerDelegate, UISearchBarDelegate, CollectionViewUpdaterDelegate, ImageScaleTransitionProviding, DetailTransitionSourceProviding, EventLoggingEventValuesProviding {
+class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewControllerDelegate, UISearchBarDelegate, LegacyCollectionViewUpdaterDelegate, ImageScaleTransitionProviding, DetailTransitionSourceProviding, EventLoggingEventValuesProviding {
 
     public var presentedContentGroupKey: String?
     public var shouldRestoreScrollPosition = false
@@ -239,7 +239,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     
     @objc var dataStore: MWKDataStore!
     private var fetchedResultsController: NSFetchedResultsController<WMFContentGroup>?
-    private var collectionViewUpdater: CollectionViewUpdater<WMFContentGroup>?
+    private var collectionViewUpdater: CollectionViewUpdater?
     
     private var wantsDeleteInsertOnNextItemUpdate: Bool = false
 
@@ -249,7 +249,16 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "midnightUTCDate", ascending: false), NSSortDescriptor(key: "dailySortPriority", ascending: true), NSSortDescriptor(key: "date", ascending: false)]
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: dataStore.viewContext, sectionNameKeyPath: "midnightUTCDate", cacheName: nil)
         fetchedResultsController = frc
-        let updater = CollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView)
+        let updater: CollectionViewUpdater
+        if #available(iOS 13, *) {
+            updater = ModernCollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView, cellProvider: { (collectionView, indexPath, itemIdentifier) in
+                return self.collectionView(collectionView, cellForItemAt: indexPath)
+            }, supplementaryViewProvider: {  (collectionView, kind, indexPath) in
+                return self.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
+            })
+        } else {
+            updater = LegacyCollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView)
+        }
         collectionViewUpdater = updater
         updater.delegate = self
         updater.isSlidingNewContentInFromTheTopEnabled = true
@@ -622,7 +631,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     }
     #endif
     
-    // MARK - CollectionViewUpdaterDelegate
+    // MARK - LegacyCollectionViewUpdaterDelegate
     
     var needsReloadVisibleCells = false
     var indexPathsForCollapsedCellsThatCanReappear = Set<IndexPath>()
@@ -636,7 +645,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
         guard needsReloadVisibleCells else {
             return
         }
@@ -647,7 +656,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         layout.currentSection = nil
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         layoutCache.invalidateGroupKey(groupKey(at: indexPath))
         collectionView.collectionViewLayout.invalidateLayout()
         if wantsDeleteInsertOnNextItemUpdate {

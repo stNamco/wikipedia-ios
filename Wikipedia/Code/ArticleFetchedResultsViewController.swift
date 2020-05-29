@@ -2,9 +2,9 @@ import UIKit
 import WMF
 
 @objc(WMFArticleFetchedResultsViewController)
-class ArticleFetchedResultsViewController: ArticleCollectionViewController, CollectionViewUpdaterDelegate {
+class ArticleFetchedResultsViewController: ArticleCollectionViewController, LegacyCollectionViewUpdaterDelegate {
     var fetchedResultsController: NSFetchedResultsController<WMFArticle>!
-    var collectionViewUpdater: CollectionViewUpdater<WMFArticle>!
+    var collectionViewUpdater: LegacyCollectionViewUpdater<WMFArticle>!
 
     open func setupFetchedResultsController(with dataStore: MWKDataStore) {
         assert(false, "Subclassers should override this method")
@@ -13,7 +13,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Coll
     @objc override var dataStore: MWKDataStore! {
         didSet {
             setupFetchedResultsController(with: dataStore)
-            collectionViewUpdater = CollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+            collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
             collectionViewUpdater?.delegate = self
         }
     }
@@ -79,7 +79,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Coll
         present(alertController, animated: true, completion: nil)
     }
     
-    open func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+    open func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? ArticleRightAlignedImageCollectionViewCell else {
                 continue
@@ -89,7 +89,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Coll
         updateEmptyState()
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         
     }
     

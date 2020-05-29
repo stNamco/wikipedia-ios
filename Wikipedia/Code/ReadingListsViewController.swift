@@ -16,7 +16,7 @@ class ReadingListsViewController: ColumnarCollectionViewController, EditableColl
     let dataStore: MWKDataStore
     let readingListsController: ReadingListsController
     var fetchedResultsController: NSFetchedResultsController<ReadingList>?
-    var collectionViewUpdater: CollectionViewUpdater<ReadingList>?
+    var collectionViewUpdater: LegacyCollectionViewUpdater<ReadingList>?
     var editController: CollectionViewEditController!
     private var articles: [WMFArticle] = [] // the articles that will be added to a reading list
     private var readingLists: [ReadingList]? // the displayed reading lists
@@ -116,7 +116,7 @@ class ReadingListsViewController: ColumnarCollectionViewController, EditableColl
     override func viewWillAppear(_ animated: Bool) {
         // setup FRC before calling super so that the data is available before the superclass checks for the empty state
         setupFetchedResultsController()
-        setupCollectionViewUpdater()
+        setupLegacyCollectionViewUpdater()
         fetch()
         editController.isShowingDefaultCellOnly = isShowingDefaultReadingListOnly
         super.viewWillAppear(animated)
@@ -347,9 +347,9 @@ extension ReadingListsViewController {
     }
 }
 
-// MARK: - CollectionViewUpdaterDelegate
-extension ReadingListsViewController: CollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: CollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+// MARK: - LegacyCollectionViewUpdaterDelegate
+extension ReadingListsViewController: LegacyCollectionViewUpdaterDelegate {
+    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? ReadingListsCollectionViewCell else {
                 continue
@@ -361,7 +361,7 @@ extension ReadingListsViewController: CollectionViewUpdaterDelegate {
         collectionView.setNeedsLayout()
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: CollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
     }
 }
 
