@@ -8,7 +8,7 @@ protocol ReadingListEntryCollectionViewControllerDelegate: NSObjectProtocol {
 class ReadingListEntryCollectionViewController: ColumnarCollectionViewController, EditableCollection, UpdatableCollection, SearchableCollection, ActionDelegate, EventLoggingEventValuesProviding {
     let dataStore: MWKDataStore
     var fetchedResultsController: NSFetchedResultsController<ReadingListEntry>?
-    var collectionViewUpdater: LegacyCollectionViewUpdater<ReadingListEntry>?
+    var collectionViewUpdater: CollectionViewUpdater?
     let readingList: ReadingList
     var searchString: String?
     
@@ -487,10 +487,10 @@ extension ReadingListEntryCollectionViewController: SortableCollection {
     }
 }
 
-// MARK: - LegacyCollectionViewUpdaterDelegate
+// MARK: - CollectionViewUpdaterDelegate
 
-extension ReadingListEntryCollectionViewController: LegacyCollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+extension ReadingListEntryCollectionViewController: CollectionViewUpdaterDelegate {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? SavedArticlesCollectionViewCell,
                 let entry = entry(at: indexPath) else {
@@ -503,7 +503,7 @@ extension ReadingListEntryCollectionViewController: LegacyCollectionViewUpdaterD
         delegate?.readingListEntryCollectionViewController(self, didUpdate: collectionView)
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         
     }
 }

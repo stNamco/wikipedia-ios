@@ -1,7 +1,7 @@
 import UIKit
 import WMF
 
-class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewControllerDelegate, UISearchBarDelegate, LegacyCollectionViewUpdaterDelegate, ImageScaleTransitionProviding, DetailTransitionSourceProviding, EventLoggingEventValuesProviding {
+class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewControllerDelegate, UISearchBarDelegate, CollectionViewUpdaterDelegate, ImageScaleTransitionProviding, DetailTransitionSourceProviding, EventLoggingEventValuesProviding {
 
     public var presentedContentGroupKey: String?
     public var shouldRestoreScrollPosition = false
@@ -631,7 +631,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     }
     #endif
     
-    // MARK - LegacyCollectionViewUpdaterDelegate
+    // MARK - CollectionViewUpdaterDelegate
     
     var needsReloadVisibleCells = false
     var indexPathsForCollapsedCellsThatCanReappear = Set<IndexPath>()
@@ -645,7 +645,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
         guard needsReloadVisibleCells else {
             return
         }
@@ -656,7 +656,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         layout.currentSection = nil
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         layoutCache.invalidateGroupKey(groupKey(at: indexPath))
         collectionView.collectionViewLayout.invalidateLayout()
         if wantsDeleteInsertOnNextItemUpdate {

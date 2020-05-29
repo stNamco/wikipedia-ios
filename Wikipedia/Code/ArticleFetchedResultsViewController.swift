@@ -2,7 +2,7 @@ import UIKit
 import WMF
 
 @objc(WMFArticleFetchedResultsViewController)
-class ArticleFetchedResultsViewController: ArticleCollectionViewController, LegacyCollectionViewUpdaterDelegate {
+class ArticleFetchedResultsViewController: ArticleCollectionViewController, CollectionViewUpdaterDelegate {
     var fetchedResultsController: NSFetchedResultsController<WMFArticle>!
     var collectionViewUpdater: LegacyCollectionViewUpdater<WMFArticle>!
 
@@ -79,7 +79,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Lega
         present(alertController, animated: true, completion: nil)
     }
     
-    open func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+    open func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? ArticleRightAlignedImageCollectionViewCell else {
                 continue
@@ -89,7 +89,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Lega
         updateEmptyState()
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         
     }
     

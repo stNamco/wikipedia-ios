@@ -1,23 +1,22 @@
 import Foundation
 
-protocol LegacyCollectionViewUpdaterDelegate: NSObjectProtocol {
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView)
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView)
-}
-
-
 protocol CollectionViewUpdater: NSObjectProtocol {
     var isSlidingNewContentInFromTheTopEnabled: Bool { get set }
     var isGranularUpdatingEnabled: Bool { get set }
-    var delegate: LegacyCollectionViewUpdaterDelegate? { get set }
+    var delegate: CollectionViewUpdaterDelegate? { get set }
     func performFetch()
+}
+
+protocol CollectionViewUpdaterDelegate: NSObjectProtocol {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView)
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView)
 }
 
 @available(iOS 13, *)
 class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, CollectionViewUpdater, NSFetchedResultsControllerDelegate {
     var isSlidingNewContentInFromTheTopEnabled: Bool = false
     var isGranularUpdatingEnabled: Bool = false
-    var delegate: LegacyCollectionViewUpdaterDelegate?
+    var delegate: CollectionViewUpdaterDelegate?
     
     private let collectionView: UICollectionView
     let fetchedResultsController: NSFetchedResultsController<T>
@@ -37,6 +36,7 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
+        delegate?.collectionViewUpdater(self, didUpdate: collectionView)
     }
     
     func performFetch() {
@@ -57,7 +57,7 @@ class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
     var isSlidingNewContentInFromTheTopEnabled: Bool = false
     var sectionChanges: [WMFSectionChange] = []
     var objectChanges: [WMFObjectChange] = []
-    weak var delegate: LegacyCollectionViewUpdaterDelegate?
+    weak var delegate: CollectionViewUpdaterDelegate?
     
     var isGranularUpdatingEnabled: Bool = true // when set to false, individual updates won't be pushed to the collection view, only reloadData()
     

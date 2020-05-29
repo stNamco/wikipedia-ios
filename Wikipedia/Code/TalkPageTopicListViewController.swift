@@ -188,10 +188,10 @@ private extension TalkPageTopicListViewController {
     }
 }
 
-//MARK: LegacyCollectionViewUpdaterDelegate
+//MARK: CollectionViewUpdaterDelegate
 
-extension TalkPageTopicListViewController: LegacyCollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) where T : NSFetchRequestResult {
+extension TalkPageTopicListViewController: CollectionViewUpdaterDelegate {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? TalkPageTopicCell else {
                 continue
@@ -201,7 +201,7 @@ extension TalkPageTopicListViewController: LegacyCollectionViewUpdaterDelegate {
         }
     }
     
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) where T : NSFetchRequestResult {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
         //no-op
     }
 }

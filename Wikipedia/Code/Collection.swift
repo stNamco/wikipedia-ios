@@ -2,10 +2,10 @@ protocol Collection: class {
     var collectionView: UICollectionView { get set }
 }
 
-protocol UpdatableCollection: Collection, LegacyCollectionViewUpdaterDelegate {
+protocol UpdatableCollection: Collection, CollectionViewUpdaterDelegate {
     associatedtype T: NSManagedObject
     var dataStore: MWKDataStore { get }
-    var collectionViewUpdater: LegacyCollectionViewUpdater<T>? { get set }
+    var collectionViewUpdater: CollectionViewUpdater? { get set }
     var fetchedResultsController: NSFetchedResultsController<T>? { get set }
     var basePredicate: NSPredicate { get }
     var baseSortDescriptors: [NSSortDescriptor] { get }

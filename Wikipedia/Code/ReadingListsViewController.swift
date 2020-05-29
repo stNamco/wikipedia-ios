@@ -16,7 +16,7 @@ class ReadingListsViewController: ColumnarCollectionViewController, EditableColl
     let dataStore: MWKDataStore
     let readingListsController: ReadingListsController
     var fetchedResultsController: NSFetchedResultsController<ReadingList>?
-    var collectionViewUpdater: LegacyCollectionViewUpdater<ReadingList>?
+    var collectionViewUpdater: CollectionViewUpdater?
     var editController: CollectionViewEditController!
     private var articles: [WMFArticle] = [] // the articles that will be added to a reading list
     private var readingLists: [ReadingList]? // the displayed reading lists
@@ -347,9 +347,9 @@ extension ReadingListsViewController {
     }
 }
 
-// MARK: - LegacyCollectionViewUpdaterDelegate
-extension ReadingListsViewController: LegacyCollectionViewUpdaterDelegate {
-    func collectionViewUpdater<T>(_ updater: LegacyCollectionViewUpdater<T>, didUpdate collectionView: UICollectionView) {
+// MARK: - CollectionViewUpdaterDelegate
+extension ReadingListsViewController: CollectionViewUpdaterDelegate {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
         for indexPath in collectionView.indexPathsForVisibleItems {
             guard let cell = collectionView.cellForItem(at: indexPath) as? ReadingListsCollectionViewCell else {
                 continue
@@ -361,7 +361,7 @@ extension ReadingListsViewController: LegacyCollectionViewUpdaterDelegate {
         collectionView.setNeedsLayout()
     }
     
-    func collectionViewUpdater<T: NSFetchRequestResult>(_ updater: LegacyCollectionViewUpdater<T>, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
     }
 }
 
