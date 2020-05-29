@@ -200,8 +200,4 @@ extension TalkPageTopicListViewController: CollectionViewUpdaterDelegate {
             configure(cell: cell, at: indexPath)
         }
     }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-        //no-op
-    }
 }

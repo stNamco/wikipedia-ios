@@ -88,11 +88,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Coll
         }
         updateEmptyState()
     }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-        
-    }
-    
+
     override func isEmptyDidChange() {
         super.isEmptyDidChange()
         updateDeleteButton()

@@ -8,8 +8,18 @@ protocol CollectionViewUpdater: NSObjectProtocol {
 }
 
 protocol CollectionViewUpdaterDelegate: NSObjectProtocol {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, willUpdate collectionView: UICollectionView)
     func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView)
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView)
+}
+
+extension CollectionViewUpdaterDelegate {
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, willUpdate collectionView: UICollectionView) {
+        
+    }
+    
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
+        
+    }
 }
 
 @available(iOS 13, *)
@@ -35,6 +45,7 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        delegate?.collectionViewUpdater(self, willUpdate: collectionView)
         diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
         delegate?.collectionViewUpdater(self, didUpdate: collectionView)
     }
@@ -116,6 +127,8 @@ class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
         previousSectionCounts = sectionCounts
         sectionCounts = fetchSectionCounts()
         
+        delegate?.collectionViewUpdater(self, willUpdate: collectionView)
+
         guard isGranularUpdatingEnabled else {
             collectionView.reloadData()
             delegate?.collectionViewUpdater(self, didUpdate: self.collectionView)
@@ -242,7 +255,7 @@ class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
                     break
                 case .update:
                     if let updatedIndexPath = objectChange.toIndexPath ?? objectChange.fromIndexPath {
-                        delegate?.collectionViewUpdater(self, updateItemAtIndexPath: updatedIndexPath, in: collectionView)
+                        collectionView.reloadItems(at: [updatedIndexPath])
                     } else {
                         assert(false, "unhandled update")
                         DDLogDebug("WMFBU unhandled update: \(objectChange)")

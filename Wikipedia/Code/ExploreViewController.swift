@@ -240,8 +240,6 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     @objc var dataStore: MWKDataStore!
     private var fetchedResultsController: NSFetchedResultsController<WMFContentGroup>?
     private var collectionViewUpdater: CollectionViewUpdater?
-    
-    private var wantsDeleteInsertOnNextItemUpdate: Bool = false
 
     private func setupFetchedResultsController() {
         let fetchRequest: NSFetchRequest<WMFContentGroup> = WMFContentGroup.fetchRequest()
@@ -633,7 +631,6 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     
     // MARK - CollectionViewUpdaterDelegate
     
-    var needsReloadVisibleCells = false
     var indexPathsForCollapsedCellsThatCanReappear = Set<IndexPath>()
     
     private func reloadVisibleCells() {
@@ -645,27 +642,14 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
     }
     
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
-        guard needsReloadVisibleCells else {
-            return
-        }
-        
-        reloadVisibleCells()
-        
-        needsReloadVisibleCells = false
-        layout.currentSection = nil
+    // MARK: CollectionViewUpdaterDelegate
+    
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, willUpdate collectionView: UICollectionView) {
+
     }
     
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-        layoutCache.invalidateGroupKey(groupKey(at: indexPath))
-        collectionView.collectionViewLayout.invalidateLayout()
-        if wantsDeleteInsertOnNextItemUpdate {
-            layout.currentSection = indexPath.section
-            collectionView.deleteItems(at: [indexPath])
-            collectionView.insertItems(at: [indexPath])
-        } else {
-            needsReloadVisibleCells = true
-        }
+    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
+        layout.currentSection = nil
     }
 
     // MARK: Event logging
@@ -911,6 +895,14 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
         }
         layoutCache.invalidateArticleKey(articleKey)
     }
+    
+    private func toggleVisibilityOfGroupToTriggerVisualChange(_ group: WMFContentGroup) {
+        layoutCache.invalidateGroupKey(group.key)
+        group.isVisible = false
+        save()
+        group.isVisible = true
+        save()
+    }
 
     private func menuActionSheetForGroup(_ group: WMFContentGroup) -> UIAlertController? {
         guard group.contentGroupKind.isCustomizable || group.contentGroupKind.isGlobal else {
@@ -929,8 +921,7 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
         let hideThisCard = UIAlertAction(title: WMFLocalizedString("explore-feed-preferences-hide-card-action-title", value: "Hide this card", comment: "Title for action that allows users to hide a feed card"), style: .default) { (_) in
             FeedFunnel.shared.logFeedCardDismissed(for: FeedFunnelContext(group))
             group.undoType = .contentGroup
-            self.wantsDeleteInsertOnNextItemUpdate = true
-            self.save()
+            self.toggleVisibilityOfGroupToTriggerVisualChange(group)
         }
         guard let title = group.headerTitle else {
             assertionFailure("Expected header title for group \(group.contentGroupKind)")
@@ -941,7 +932,7 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
             // If there's only one group left it means that we're about to show an alert about turning off the Explore tab. In those cases, we don't want to provide the option to undo.
             if feedContentController.countOfVisibleContentGroupKinds > 1 {
                 group.undoType = .contentGroupKind
-                self.wantsDeleteInsertOnNextItemUpdate = true
+                self.toggleVisibilityOfGroupToTriggerVisualChange(group)
             }
             feedContentController.toggleContentGroup(of: group.contentGroupKind, isOn: false, waitForCallbackFromCoordinator: true, apply: true, updateFeed: false)
             FeedFunnel.shared.logFeedCardDismissed(for: FeedFunnelContext(group))
@@ -965,11 +956,10 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
             dataStore.feedContentController.toggleContentGroup(of: group.contentGroupKind, isOn: true, waitForCallbackFromCoordinator: false, apply: true, updateFeed: false)
         }
         group.undoType = .none
-        wantsDeleteInsertOnNextItemUpdate = true
         if let indexPath = fetchedResultsController?.indexPath(forObject: group) {
             indexPathsForCollapsedCellsThatCanReappear.remove(indexPath)
         }
-        save()
+        toggleVisibilityOfGroupToTriggerVisualChange(group)
     }
     
 }

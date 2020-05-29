@@ -502,10 +502,6 @@ extension ReadingListEntryCollectionViewController: CollectionViewUpdaterDelegat
         collectionView.setNeedsLayout()
         delegate?.readingListEntryCollectionViewController(self, didUpdate: collectionView)
     }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-        
-    }
 }
 
 // MARK: - AddArticlesToReadingListViewControllerDelegate

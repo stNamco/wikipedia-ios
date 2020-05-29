@@ -360,9 +360,6 @@ extension ReadingListsViewController: CollectionViewUpdaterDelegate {
         editController.isShowingDefaultCellOnly = isShowingDefaultReadingListOnly
         collectionView.setNeedsLayout()
     }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-    }
 }
 
 // MARK: - ActionDelegate

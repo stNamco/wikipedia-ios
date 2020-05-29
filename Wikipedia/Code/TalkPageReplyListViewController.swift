@@ -288,10 +288,6 @@ extension TalkPageReplyListViewController: CollectionViewUpdaterDelegate {
             cell.configure(title: title)
         }
     }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, updateItemAtIndexPath indexPath: IndexPath, in collectionView: UICollectionView) {
-        //no-op
-    }
 }
 
 //MARK: Private
