@@ -23,6 +23,8 @@ NSString *const WMFExploreFeedPreferencesDidChangeNotification = @"WMFExploreFee
 NSString *const WMFExploreFeedPreferencesDidSaveNotification = @"WMFExploreFeedPreferencesDidSaveNotification";
 NSString *const WMFNewExploreFeedPreferencesWereRejectedNotification = @"WMFNewExploreFeedPreferencesWereRejectedNotification";
 
+NSString *const WMFExploreFeedControllerWillUpdateNotification = @"WMFExploreFeedControllerWillUpdateNotification";
+
 @interface WMFExploreFeedContentController () <WMFBackgroundFetcher>
 
 @property (nonatomic, strong) NSArray<id<WMFContentSource>> *contentSources;
@@ -202,6 +204,7 @@ NSString *const WMFNewExploreFeedPreferencesWereRejectedNotification = @"WMFNewE
                                             NSError *saveError = nil;
                                             if ([moc hasChanges]) {
                                                 [self applyExploreFeedPreferencesToAllObjectsInManagedObjectContext:moc];
+                                                [[NSNotificationCenter defaultCenter] postNotificationName:WMFExploreFeedControllerWillUpdateNotification object:self];
                                                 if (![moc save:&saveError]) {
                                                     DDLogError(@"Error saving: %@", saveError);
                                                 }

@@ -25,6 +25,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         title = CommonStrings.exploreTabTitle
 
         NotificationCenter.default.addObserver(self, selector: #selector(exploreFeedPreferencesDidSave(_:)), name: NSNotification.Name.WMFExploreFeedPreferencesDidSave, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(exploreFeedWillUpdate(_:)), name: NSNotification.Name.WMFExploreFeedControllerWillUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(articleDidChange(_:)), name: NSNotification.Name.WMFArticleUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(articleDeleted(_:)), name: NSNotification.Name.WMFArticleDeleted, object: nil)
 #if UI_TEST
@@ -645,11 +646,11 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     // MARK: CollectionViewUpdaterDelegate
     
     func collectionViewUpdater(_ updater: CollectionViewUpdater, willUpdate collectionView: UICollectionView) {
-
+        
     }
     
     func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
-        layout.currentSection = nil
+        layout.slideInNewContentFromTheTop = false
     }
 
     // MARK: Event logging
@@ -847,6 +848,12 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
                 self.collectionView.collectionViewLayout.invalidateLayout()
             }
             self.indexPathsForCollapsedCellsThatCanReappear = []
+        }
+    }
+    
+    @objc func exploreFeedWillUpdate(_ note: Notification) {
+        DispatchQueue.main.async {
+            self.layout.slideInNewContentFromTheTop = true
         }
     }
     

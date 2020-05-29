@@ -10,6 +10,8 @@ extern NSString *_Nonnull const WMFExploreFeedPreferencesDidChangeNotification;
 extern NSString *_Nonnull const WMFExploreFeedPreferencesDidSaveNotification;
 extern NSString *_Nonnull const WMFNewExploreFeedPreferencesWereRejectedNotification;
 
+extern NSString *_Nonnull const WMFExploreFeedControllerWillUpdateNotification;
+
 extern const NSInteger WMFExploreFeedMaximumNumberOfDays;
 
 @interface WMFExploreFeedContentController : NSObject
