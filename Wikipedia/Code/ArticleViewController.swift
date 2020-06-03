@@ -51,6 +51,9 @@ class ArticleViewController: ViewController, HintPresenting {
     
     /// Current ETag of the web content response. Used to verify when content has changed on the server.
     var currentETag: String?
+    
+    /// Current ETag of the article summary response. Used to verify when content has changed on the server.
+    var currentArticleSummaryETag: String?
 
     /// Used to delay reloading the web view to prevent `UIScrollView` jitter
     fileprivate var shouldPerformWebRefreshAfterScrollViewDeceleration = false
@@ -361,10 +364,11 @@ class ArticleViewController: ViewController, HintPresenting {
         DispatchQueue.main.async {
             // TODO: Remove this workaround when upstream bug is deployed: https://phabricator.wikimedia.org/T251956
             let cachePolicy: URLRequest.CachePolicy? = self.state == .reloading ? .reloadIgnoringLocalAndRemoteCacheData : nil
-            self.dataStore.articleSummaryController.updateOrCreateArticleSummaryForArticle(withKey: key, cachePolicy: cachePolicy) { (article, error) in
+            self.dataStore.articleSummaryController.updateOrCreateArticleSummaryForArticle(withKey: key, cachePolicy: cachePolicy) { (article, error, eTag) in
                 defer {
                     self.articleLoadWaitGroup?.leave()
                     self.updateMenuItems()
+                    self.currentArticleSummaryETag = eTag
                 }
                 guard let article = article else {
                     return
@@ -583,12 +587,26 @@ class ArticleViewController: ViewController, HintPresenting {
         saveArticleScrollPosition()
         isRestoringState = true
         setupForStateRestorationIfNecessary()
+        
         // If a revisionID was provided, just load that revision
         if let revisionID = revisionID {
+            
+            //wait for the summary ETag to change before reloading
+            if let summaryEtag = currentArticleSummaryETag,
+                let key = article.key {
+                    self.dataStore.articleSummaryController.fetcher.waitForSummaryChange(with: key, eTag: summaryEtag, maxAttempts: 5) { (result) in
+                        DispatchQueue.main.async {
+                            self.performWebViewRefresh(revisionID)
+                        }
+                    }
+                return
+            }
+            
             performWebViewRefresh(revisionID)
+            
             return
         }
-        // If no revisionID was provided, wait for the ETag to change
+        // If no revisionID was provided, wait for the mobile-html ETag to change
         guard let eTag = currentETag else {
             performWebViewRefresh()
             return

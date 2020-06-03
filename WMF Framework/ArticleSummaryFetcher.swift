@@ -122,5 +122,81 @@ public class ArticleSummaryFetcher: Fetcher {
             completion(summary, response, error)
         }
     }
+    
+    /// Makes periodic HEAD requests to the mobile-html endpoint until the etag no longer matches the one provided.
+    @discardableResult public func waitForSummaryChange(with articleKey: String, eTag: String, attempt: Int = 0, maxAttempts: Int, cancellationKey: CancellationKey? = nil, completion: @escaping (Result<String, Error>) -> Void) -> CancellationKey? {
+        guard attempt < maxAttempts else {
+            completion(.failure(ArticleFetcherError.updatedContentRequestTimeout))
+            return nil
+        }
+        guard
+            let articleURL = URL(string: articleKey),
+            let title = articleURL.percentEncodedPageTitleForPathComponents
+        else {
+            completion(.failure(Fetcher.invalidParametersError))
+            return nil
+        }
+        
+        let pathComponents = ["page", "summary", title]
+        let taskURL = configuration.pageContentServiceAPIURLComponentsForHost(articleURL.host, appending: pathComponents).url
+        
+        let key = cancellationKey ?? UUID().uuidString
+        
+        let maybeTask = session.dataTask(with: taskURL, method: .head, headers: [URLRequest.ifNoneMatchHeaderKey: eTag], cachePolicy: .reloadIgnoringLocalCacheData) { (_, response, error) in
+            defer {
+                self.untrack(taskFor: key)
+            }
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            let bail = {
+                completion(.failure(RequestError.unexpectedResponse))
+            }
+            guard let httpURLResponse = response as? HTTPURLResponse else {
+                bail()
+                return
+            }
+            
+            let retry = {
+                // Exponential backoff
+                let delayTime = 0.25 * pow(2, Double(attempt))
+                dispatchOnMainQueueAfterDelayInSeconds(delayTime) {
+                    self.waitForSummaryChange(with: articleKey, eTag: eTag, attempt: attempt + 1, maxAttempts: maxAttempts, cancellationKey: key, completion: completion)
+                }
+            }
+
+            // Check for 200. The server returns 304 when the ETag matches the value we provided for `If-None-Match` above
+            switch httpURLResponse.statusCode {
+            case 200:
+                break
+            case 304:
+                retry()
+                return
+            default:
+                bail()
+                return
+            }
+            
+            guard
+                let updatedETag = httpURLResponse.allHeaderFields[HTTPURLResponse.etagHeaderKey] as? String,
+                updatedETag != eTag // Technically redundant. With If-None-Match provided, we should only get a 200 response if the ETag has changed. Included here as an extra check against a server behaving incorrectly
+            else {
+                assert(false, "A 200 response from the server should indicate that the ETag has changed")
+                retry()
+                return
+            }
+            
+            DDLogDebug("ETag for \(articleURL) changed from \(eTag) to \(updatedETag)")
+            completion(.success(updatedETag))
+        }
+        guard let task = maybeTask else {
+            completion(.failure(RequestError.unknown))
+            return nil
+        }
+        track(task: task, for: key)
+        task.resume()
+        return key
+    }
 }
 

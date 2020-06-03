@@ -10,16 +10,17 @@ public class ArticleSummaryController: NSObject {
         self.fetcher = fetcher
     }
     
-    @discardableResult public func updateOrCreateArticleSummaryForArticle(withKey articleKey: String, cachePolicy: URLRequest.CachePolicy? = nil, completion: ((WMFArticle?, Error?) -> Void)? = nil) -> URLSessionTask? {
+    @discardableResult public func updateOrCreateArticleSummaryForArticle(withKey articleKey: String, cachePolicy: URLRequest.CachePolicy? = nil, completion: ((WMFArticle?, Error?, String?) -> Void)? = nil) -> URLSessionTask? {
         return fetcher.fetchSummaryForArticle(with: articleKey, cachePolicy: cachePolicy) { [weak self] (articleSummary, urlResponse, error) in
             DispatchQueue.main.async {
                 guard let articleSummary = articleSummary,
                     error == nil else {
-                    completion?(nil, error)
+                    completion?(nil, error, nil)
                     return
                 }
                 self?.processSummaryResponses(with: [articleKey: articleSummary]) { (result, error) in
-                    completion?(result[articleKey], error)
+                    let summaryEtag = (urlResponse as? HTTPURLResponse)?.allHeaderFields[HTTPURLResponse.etagHeaderKey] as? String
+                    completion?(result[articleKey], error, summaryEtag)
                 }
             }
         }
