@@ -114,7 +114,7 @@ class ArticleViewController: ViewController, HintPresenting {
         return WMFWebView(frame: view.bounds, configuration: webViewConfiguration)
     }()
 
-    private var verticalOffsetPercentageToRestore: CGFloat?
+    var verticalOffsetPercentageToRestore: CGFloat?
     
     // MARK: HintPresenting
     
@@ -256,6 +256,12 @@ class ArticleViewController: ViewController, HintPresenting {
         }
         verticalOffsetPercentageToRestore = nil
         webView.scrollView.verticalOffsetPercentage = verticalOffsetPercentage
+        
+        if webView.alpha == 0 {
+            UIView.animate(withDuration: 0.1) {
+                self.webView.alpha = 1
+            }
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

@@ -18,6 +18,11 @@ extension ArticleViewController : ArticleTableOfContentsDisplayControllerDelegat
         tableOfContentsController.hide(animated: true)
         toolbarController.update()
         if tableOfContentsController.viewController.displayMode == .inline {
+            
+            if let _ = verticalOffsetPercentageToRestore {
+                self.webView.alpha = 0
+            }
+            
             updateArticleMargins()
         }
     }
@@ -26,6 +31,11 @@ extension ArticleViewController : ArticleTableOfContentsDisplayControllerDelegat
         tableOfContentsController.show(animated: true)
         toolbarController.update()
         if tableOfContentsController.viewController.displayMode == .inline {
+            
+            if let _ = verticalOffsetPercentageToRestore {
+                self.webView.alpha = 0
+            }
+            
             updateArticleMargins()
         }
     }
