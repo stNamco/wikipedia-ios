@@ -438,12 +438,12 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
         
         if let vc = group.detailViewControllerForPreviewItemAtIndex(0, dataStore: dataStore, theme: theme) {
-            if vc is WMFImageGalleryViewController {
-                present(vc, animated: true)
-                FeedFunnel.shared.logFeedCardOpened(for: FeedFunnelContext(group))
-            } else {
+//            if vc is WMFImageGalleryViewController {
+//                present(vc, animated: true)
+//                FeedFunnel.shared.logFeedCardOpened(for: FeedFunnelContext(group))
+//            } else {
                 wmf_push(vc, context: FeedFunnelContext(group), index: indexPath.item, animated: true)
-            }
+//            }
             return
         }
     }
@@ -672,9 +672,10 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         let convertedLocation = view.convert(location, to: vc.collectionView)
         if let indexPath = vc.collectionView.indexPathForItem(at: convertedLocation), let cell = vc.collectionView.cellForItem(at: indexPath), let viewControllerToCommit = contentGroup.detailViewControllerForPreviewItemAtIndex(indexPath.row, dataStore: dataStore, theme: theme) {
             previewingContext.sourceRect = view.convert(cell.bounds, from: cell)
-            if let potd = viewControllerToCommit as? WMFImageGalleryViewController {
-                potd.setOverlayViewTopBarHidden(true)
-            } else if let avc = viewControllerToCommit as? WMFArticleViewController {
+//            if let potd = viewControllerToCommit as? WMFImageGalleryViewController {
+//                potd.setOverlayViewTopBarHidden(true)
+//            } else
+            if let avc = viewControllerToCommit as? WMFArticleViewController {
                 avc.articlePreviewingActionsDelegate = self
                 avc.wmf_addPeekableChildViewController(for: avc.articleURL, dataStore: dataStore, theme: theme)
             }
@@ -691,11 +692,12 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     }
     
     open override func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        if let potd = viewControllerToCommit as? WMFImageGalleryViewController {
-            potd.setOverlayViewTopBarHidden(false)
-            present(potd, animated: false)
-            FeedFunnel.shared.logFeedCardOpened(for: previewed.context)
-        } else if let avc = viewControllerToCommit as? WMFArticleViewController {
+//        if let potd = viewControllerToCommit as? WMFImageGalleryViewController {
+//            potd.setOverlayViewTopBarHidden(false)
+//            present(potd, animated: false)
+//            FeedFunnel.shared.logFeedCardOpened(for: previewed.context)
+//        } else
+        if let avc = viewControllerToCommit as? WMFArticleViewController {
             avc.wmf_removePeekableChildViewControllers()
             wmf_push(avc, context: previewed.context, index: previewed.indexPath?.item, animated: false)
         } else {

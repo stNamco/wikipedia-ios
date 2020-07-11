@@ -17,7 +17,8 @@ extension WMFContentGroup {
             guard let date = self.date else {
                 return nil
             }
-            return WMFPOTDImageGalleryViewController(dates: [date], theme: theme, overlayViewTopBarHidden: false)
+            //return WMFPOTDImageGalleryViewController(dates: [date], theme: theme, overlayViewTopBarHidden: false)
+            return nil
         case .story, .event:
             return detailViewControllerWithDataStore(dataStore, theme: theme)
         default:

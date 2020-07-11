@@ -5,7 +5,7 @@
 #import "WMFViewController.h"
 #import "WMFTableOfContentsDisplay.h"
 #import "WebViewController.h"
-#import "WMFImageGalleryViewController.h"
+//#import "WMFImageGalleryViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  View controller responsible for displaying article content.
  */
-@interface WMFArticleViewController : WMFViewController <WMFWebViewControllerDelegate, WMFImagePreviewingActionsDelegate>
+@interface WMFArticleViewController : WMFViewController <WMFWebViewControllerDelegate>
 
 - (instancetype)initWithArticleURL:(NSURL *)url
                          dataStore:(MWKDataStore *)dataStore

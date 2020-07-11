@@ -1533,10 +1533,10 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 - (void)webViewController:(WebViewController *)controller
     didTapImageWithSourceURL:(nonnull NSURL *)imageSourceURL {
     MWKImage *selectedImage = [[MWKImage alloc] initWithArticle:self.article sourceURL:imageSourceURL];
-    WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article selectedImage:selectedImage theme:self.theme overlayViewTopBarHidden:NO];
-    if (fullscreenGallery != nil) {
-        [self presentViewController:fullscreenGallery animated:YES completion:nil];
-    }
+//    WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article selectedImage:selectedImage theme:self.theme overlayViewTopBarHidden:NO];
+//    if (fullscreenGallery != nil) {
+//        [self presentViewController:fullscreenGallery animated:YES completion:nil];
+//    }
 }
 
 - (void)webViewController:(WebViewController *)controller didLoadArticle:(MWKArticle *)article {
@@ -1742,24 +1742,24 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 #pragma mark - Header Tap Gesture
 
 - (void)imageViewDidTap:(UITapGestureRecognizer *)tap {
-    WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article theme:self.theme overlayViewTopBarHidden:NO];
-    //    fullscreenGallery.referenceViewDelegate = self;
-    if (fullscreenGallery != nil) {
-        [self presentViewController:fullscreenGallery animated:YES completion:nil];
-    }
+//    WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article theme:self.theme overlayViewTopBarHidden:NO];
+//    //    fullscreenGallery.referenceViewDelegate = self;
+//    if (fullscreenGallery != nil) {
+//        [self presentViewController:fullscreenGallery animated:YES completion:nil];
+//    }
 }
 
 #pragma mark - WMFImageGalleryViewControllerReferenceViewDelegate
 
-- (nullable UIImageView *)referenceViewForImageController:(WMFArticleImageGalleryViewController *)controller {
-    MWKImage *currentImage = [controller currentImage];
-    MWKImage *leadImage = self.article.leadImage;
-    if ([currentImage isVariantOfImage:leadImage]) {
-        return self.headerImageView;
-    } else {
-        return nil;
-    }
-}
+//- (nullable UIImageView *)referenceViewForImageController:(WMFArticleImageGalleryViewController *)controller {
+//    MWKImage *currentImage = [controller currentImage];
+//    MWKImage *leadImage = self.article.leadImage;
+//    if ([currentImage isVariantOfImage:leadImage]) {
+//        return self.headerImageView;
+//    } else {
+//        return nil;
+//    }
+//}
 
 #pragma mark - Edit Section
 
@@ -1895,19 +1895,19 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 
 #pragma mark - WMFImagePreviewingActionsDelegate
 
-- (void)shareImagePreviewActionSelectedWithImageController:(nonnull WMFImageGalleryViewController *)imageController shareActivityController:(nonnull UIActivityViewController *)shareActivityController {
-    [self presentViewController:shareActivityController animated:YES completion:nil];
-}
+//- (void)shareImagePreviewActionSelectedWithImageController:(nonnull WMFImageGalleryViewController *)imageController shareActivityController:(nonnull UIActivityViewController *)shareActivityController {
+//    [self presentViewController:shareActivityController animated:YES completion:nil];
+//}
 
 #pragma mark - Article lead image peeking via UIViewControllerPreviewingDelegate
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
                        viewControllerForLocation:(CGPoint)location {
-    if (previewingContext == self.leadImagePreviewingContext) {
-        WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article selectedImage:nil theme:self.theme overlayViewTopBarHidden:YES];
-        fullscreenGallery.imagePreviewingActionsDelegate = self;
-        return fullscreenGallery;
-    }
+//    if (previewingContext == self.leadImagePreviewingContext) {
+//        WMFArticleImageGalleryViewController *fullscreenGallery = [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article selectedImage:nil theme:self.theme overlayViewTopBarHidden:YES];
+//        fullscreenGallery.imagePreviewingActionsDelegate = self;
+//        return fullscreenGallery;
+//    }
     return nil;
 }
 
@@ -1967,19 +1967,20 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 }
 
 - (nullable UIViewController *)viewControllerForImageFilePageURL:(nullable NSURL *)imageFilePageURL withTopBarHidden:(BOOL)topBarHidden {
-    NSURL *galleryURL = [self galleryURLFromImageFilePageURL:imageFilePageURL];
-
-    if (!galleryURL) {
-        return nil;
-    }
-    MWKImage *selectedImage = [[MWKImage alloc] initWithArticle:self.article sourceURL:galleryURL];
-    WMFArticleImageGalleryViewController *gallery =
-        [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article
-                                                        selectedImage:selectedImage
-                                                                theme:self.theme
-                                              overlayViewTopBarHidden:topBarHidden];
-    gallery.imagePreviewingActionsDelegate = self;
-    return gallery;
+//    NSURL *galleryURL = [self galleryURLFromImageFilePageURL:imageFilePageURL];
+//
+//    if (!galleryURL) {
+//        return nil;
+//    }
+//    MWKImage *selectedImage = [[MWKImage alloc] initWithArticle:self.article sourceURL:galleryURL];
+//    WMFArticleImageGalleryViewController *gallery =
+//        [[WMFArticleImageGalleryViewController alloc] initWithArticle:self.article
+//                                                        selectedImage:selectedImage
+//                                                                theme:self.theme
+//                                              overlayViewTopBarHidden:topBarHidden];
+//    gallery.imagePreviewingActionsDelegate = self;
+//    return gallery;
+    return nil;
 }
 
 - (nullable UIViewController *)viewControllerForPreviewURL:(NSURL *)url {
@@ -2001,10 +2002,10 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
         [viewControllerToCommit wmf_removePeekableChildViewControllers];
         [self pushArticleViewController:(WMFArticleViewController *)viewControllerToCommit animated:YES];
     } else {
-        if ([viewControllerToCommit isKindOfClass:[WMFImageGalleryViewController class]]) {
-            [(WMFImageGalleryViewController *)viewControllerToCommit setOverlayViewTopBarHidden:NO];
-        }
-        [self presentViewController:viewControllerToCommit animated:YES completion:nil];
+//        if ([viewControllerToCommit isKindOfClass:[WMFImageGalleryViewController class]]) {
+//            [(WMFImageGalleryViewController *)viewControllerToCommit setOverlayViewTopBarHidden:NO];
+//        }
+//        [self presentViewController:viewControllerToCommit animated:YES completion:nil];
     }
 }
 
