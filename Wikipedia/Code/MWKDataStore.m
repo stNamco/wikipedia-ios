@@ -111,11 +111,19 @@ static uint64_t bundleHash() {
 - (NSDictionary *)loadSharedInfoDictionaryWithContainerURL:(NSURL *)containerURL {
     NSURL *infoDictionaryURL = [containerURL URLByAppendingPathComponent:@"Wikipedia.info" isDirectory:NO];
     NSData *infoDictionaryData = [NSData dataWithContentsOfURL:infoDictionaryURL];
-    NSDictionary *infoDictionary = [NSKeyedUnarchiver unarchiveObjectWithData:infoDictionaryData];
+    NSError *unarchiveError = nil;
+    NSDictionary *infoDictionary = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class] fromData:infoDictionaryData error:&unarchiveError];
+    if (unarchiveError) {
+        DDLogError(@"Error unarchiving shared info dictionary: %@", unarchiveError);
+    }
     if (!infoDictionary[@"CrossProcessNotificiationChannelName"]) {
         NSString *channelName = [NSString stringWithFormat:@"org.wikimedia.wikipedia.cd-cpn-%@", [NSUUID new].UUIDString].lowercaseString;
         infoDictionary = @{@"CrossProcessNotificiationChannelName": channelName};
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:infoDictionary];
+        NSError *archiveError = nil;
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:infoDictionary requiringSecureCoding:false error:&archiveError];
+        if (archiveError) {
+            DDLogError(@"Error archiving shared info dictionary: %@", archiveError);
+        }
         [data writeToURL:infoDictionaryURL atomically:YES];
     }
     return infoDictionary;
@@ -144,7 +152,12 @@ static uint64_t bundleHash() {
     NSString *fileName = [NSString stringWithFormat:@"%llu.changes", state];
     NSURL *fileURL = [baseURL URLByAppendingPathComponent:fileName isDirectory:NO];
     NSData *data = [NSData dataWithContentsOfURL:fileURL];
-    NSDictionary *userInfo = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    NSError *unarchiveError = nil;
+    NSDictionary *userInfo = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class] fromData:data error:&unarchiveError];
+    if (unarchiveError) {
+        DDLogError(@"Error unarchiving cross process core data notification: %@", unarchiveError);
+        return;
+    }
     [NSManagedObjectContext mergeChangesFromRemoteContextSave:userInfo intoContexts:@[self.viewContext]];
 }
 
@@ -229,7 +242,14 @@ static uint64_t bundleHash() {
     uint64_t state = bundleHash();
 
     NSDictionary *archiveableUserInfo = [self archivableNotificationUserInfoForUserInfo:userInfo];
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:archiveableUserInfo];
+    
+    NSError *archiveError = nil;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:archiveableUserInfo requiringSecureCoding:NO error:&archiveError];
+    if (archiveError) {
+        DDLogError(@"Error archiving cross process changes: %@", archiveError);
+        return;
+    }
+    
     NSURL *baseURL = [[NSFileManager defaultManager] wmf_containerURL];
     NSString *fileName = [NSString stringWithFormat:@"%llu.changes", state];
     NSURL *fileURL = [baseURL URLByAppendingPathComponent:fileName isDirectory:NO];
@@ -400,21 +420,6 @@ static uint64_t bundleHash() {
         }
     }
 
-    if (currentLibraryVersion < 7) {
-        NSError *fileProtectionError = nil;
-        if ([self.containerURL setResourceValue:NSURLFileProtectionCompleteUntilFirstUserAuthentication forKey:NSURLFileProtectionKey error:&fileProtectionError]) {
-            [moc wmf_setValue:@(7) forKey:WMFLibraryVersionKey];
-            NSError *migrationSaveError = nil;
-            if ([moc hasChanges] && ![moc save:&migrationSaveError]) {
-                DDLogError(@"Error saving during migration: %@", migrationSaveError);
-                return;
-            }
-        } else {
-            DDLogError(@"Error enabling file protection: %@", fileProtectionError);
-            return;
-        }
-    }
-
     if (currentLibraryVersion < 8) {
         NSUserDefaults *ud = [[NSUserDefaults alloc] initWithSuiteName:WMFApplicationGroupIdentifier];
         [ud removeObjectForKey:@"WMFOpenArticleURLKey"];
@@ -456,30 +461,35 @@ static uint64_t bundleHash() {
 
 /// Library updates are separate from Core Data migration and can be used to orchestrate migrations that are more complex than automatic Core Data migration allows.
 /// They can also be used to perform migrations when the underlying Core Data model has not changed version but the apps' logic has changed in a way that requires data migration.
-- (void)performLibraryUpdates:(dispatch_block_t)completion {
+- (void)performLibraryUpdates:(dispatch_block_t)completion needsMigrateBlock:(dispatch_block_t)needsMigrateBlock {
+    dispatch_block_t combinedCompletion = ^{
+        [WMFImageCacheControllerWrapper performLibraryUpdates:^(NSError * _Nullable error) {
+            if (error) {
+                DDLogError(@"Error during cache controller migration: %@", error);
+            }
+            if (completion) {
+                completion();
+            }
+        }];
+    };
     NSNumber *libraryVersionNumber = [self.viewContext wmf_numberValueForKey:WMFLibraryVersionKey];
     // If the library value doesn't exist, it's a new library and can be set to the latest version
     if (!libraryVersionNumber) {
         [self performInitialLibrarySetup];
-        if (completion) {
-            completion();
-        }
+        combinedCompletion();
         return;
     }
     NSInteger currentUserLibraryVersion = [libraryVersionNumber integerValue];
     // If the library version is >= the current version, we can skip the migration
     if (currentUserLibraryVersion >= WMFCurrentLibraryVersion) {
-        if (completion) {
-            completion();
-        }
+        combinedCompletion();
         return;
     }
+    
+    needsMigrateBlock();
     [self performBackgroundCoreDataOperationOnATemporaryContext:^(NSManagedObjectContext *moc) {
-        dispatch_block_t done = ^{
-            dispatch_async(dispatch_get_main_queue(), completion);
-        };
         [self performUpdatesFromLibraryVersion:currentUserLibraryVersion inManagedObjectContext:moc];
-        done();
+        combinedCompletion();
     }];
 }
 

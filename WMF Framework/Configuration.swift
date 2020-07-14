@@ -85,19 +85,19 @@ public class Configuration: NSObject {
     }
     
     public struct Domain {
-        static let wikipedia = "wikipedia.org"
-        static let wikidata = "wikidata.org"
-        static let mediaWiki = "mediawiki.org"
-        static let betaLabs = "wikipedia.beta.wmflabs.org"
-        static let appsLabs = "apps.wmflabs.org" // Apps team's labs instance
-        static let mobileAppsServicesLabs = "mobileapps.wmflabs.org" // Product Infrastructure team's labs instance
-        static let localhost = "localhost"
-        static let englishWikipedia = "en.wikipedia.org"
-        static let wikimedia = "wikimedia.org"
-        static let metaWiki = "meta.wikimedia.org"
-        static let wikimediafoundation = "wikimediafoundation.org"
+        public static let wikipedia = "wikipedia.org"
+        public static let wikidata = "wikidata.org"
+        public static let mediaWiki = "mediawiki.org"
+        public static let betaLabs = "wikipedia.beta.wmflabs.org"
+        public static let appsLabs = "mobileapps.wmflabs.org" // Product Infrastructure team's labs instance
+        public static let localhost = "localhost"
+        public static let englishWikipedia = "en.wikipedia.org"
+        public static let wikimedia = "wikimedia.org"
+        public static let metaWiki = "meta.wikimedia.org"
+        public static let wikimediafoundation = "wikimediafoundation.org"
+        public static let uploads = "upload.wikimedia.org"
     }
-   
+    
     struct Path {
         static let wikiResourceComponent = ["wiki"]
         static let restBaseAPIComponents = ["api", "rest_v1"]
