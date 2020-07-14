@@ -1,12 +1,12 @@
 
-public extension WMFFeedArticlePreview {
-    @objc var descriptionOrSnippet: String? {
-        if let wikidataDescription = wikidataDescription, !wikidataDescription.isEmpty {
-            let articleLanguage = articleURL.wmf_language
+public extension ArticleSummary {
+    var descriptionOrSnippet: String? {
+        if let wikidataDescription = articleDescription, !wikidataDescription.isEmpty,
+            let articleLanguage = articleURL?.wmf_language {
             return wikidataDescription.wmf_stringByCapitalizingFirstCharacter(usingWikipediaLanguage: articleLanguage)
         }
-        if let snippet = snippet, !snippet.isEmpty {
-            return String(snippet.prefix(128))
+        if let extract = extract, !extract.isEmpty {
+            return String(extract.prefix(128))
         }
         return nil
     }

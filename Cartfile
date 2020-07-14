@@ -1,4 +1,3 @@
-github "Mantle/Mantle" ~> 2.0.0
 github "CocoaLumberjack/CocoaLumberjack" ~> 3.4.2
 github "wikimedia/NYTPhotoViewer" "wmf"
 github "wikimedia/hpple" "master"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15702" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="ReadingList" representedClassName="WMF.ReadingList" syncable="YES">
         <attribute name="canonicalName" optional="YES" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
@@ -170,7 +170,7 @@
         </fetchIndex>
     </entity>
     <entity name="WMFContent" representedClassName="WMFContent" syncable="YES">
-        <attribute name="object" optional="YES" attributeType="Transformable"/>
+        <attribute name="object" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
         <relationship name="contentGroup" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="WMFContentGroup" inverseName="fullContent" inverseEntity="WMFContentGroup"/>
     </entity>
     <entity name="WMFContentGroup" representedClassName="WMFContentGroup" syncable="YES">
@@ -178,7 +178,7 @@
         <attribute name="contentDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="contentGroupKindInteger" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="contentMidnightUTCDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="contentPreview" optional="YES" attributeType="Transformable"/>
+        <attribute name="contentPreview" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
         <attribute name="contentTypeInteger" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="countOfFullContent" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
         <attribute name="dailySortPriority" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -229,7 +229,7 @@
         <element name="TalkPageTopic" positionX="-36" positionY="144" width="128" height="180"/>
         <element name="TalkPageTopicContent" positionX="-36" positionY="135" width="128" height="90"/>
         <element name="WMFArticle" positionX="-63" positionY="-18" width="128" height="568"/>
-        <element name="WMFContent" positionX="-63" positionY="135" width="128" height="75"/>
+        <element name="WMFContent" positionX="-63" positionY="135" width="128" height="73"/>
         <element name="WMFContentGroup" positionX="-63" positionY="99" width="128" height="343"/>
         <element name="WMFKeyValue" positionX="-63" positionY="135" width="128" height="103"/>
     </elements>

@@ -1,25 +1,9 @@
 #import <WMF/WMFFeedNewsStory.h>
-#import <WMF/WMFFeedArticlePreview.h>
-#import <WMF/WMFComparison.h>
-#import <WMF/NSCalendar+WMFCommonCalendars.h>
-#import <WMF/WMFLocalization.h>
-#import <WMF/NSURL+WMFLinkParsing.h>
-#import <WMF/WMF-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation WMFFeedNewsStory
 
-+ (NSDictionary *)JSONKeyPathsByPropertyKey {
-    return @{WMF_SAFE_KEYPATH(WMFFeedNewsStory.new, midnightUTCMonthAndDay): @"story",
-             WMF_SAFE_KEYPATH(WMFFeedNewsStory.new, storyHTML): @"story",
-             WMF_SAFE_KEYPATH(WMFFeedNewsStory.new, articlePreviews): @"links",
-             WMF_SAFE_KEYPATH(WMFFeedNewsStory.new, featuredArticlePreview): @"featuredArticlePreview"};
-}
-
-+ (NSValueTransformer *)articlePreviewsJSONTransformer {
-    return [MTLJSONAdapter arrayTransformerWithModelClass:[WMFFeedArticlePreview class]];
-}
 
 + (NSRegularExpression *)dateRegularExpression {
     static dispatch_once_t onceToken;
@@ -44,26 +28,18 @@ NS_ASSUME_NONNULL_BEGIN
     return dateFormatter;
 }
 
-+ (NSValueTransformer *)midnightUTCMonthAndDayJSONTransformer {
-    return [MTLValueTransformer transformerUsingForwardBlock:^id(NSString *value,
-                                                                 BOOL *success,
-                                                                 NSError *__autoreleasing *error) {
-        NSRegularExpression *regex = [WMFFeedNewsStory dateRegularExpression];
-        NSTextCheckingResult *result = [[regex matchesInString:value options:0 range:NSMakeRange(0, value.length)] firstObject];
-        if (result == nil) {
-            return nil;
-        }
-        NSString *dateString = [regex replacementStringForResult:result inString:value offset:0 template:@"$1"];
-        if (dateString == nil) {
-            return nil;
-        }
-        NSDate *date = [[WMFFeedNewsStory dateFormatter] dateFromString:dateString];
-        return date;
-    }];
-}
-
-+ (NSUInteger)modelVersion {
-    return 5;
++ (nullable NSDate *)midnightUTCMonthAndDayFromStoryHTML:(NSString *)storyHTML {
+    NSRegularExpression *regex = [WMFFeedNewsStory dateRegularExpression];
+     NSTextCheckingResult *result = [[regex matchesInString:storyHTML options:0 range:NSMakeRange(0, value.length)] firstObject];
+     if (result == nil) {
+         return nil;
+     }
+     NSString *dateString = [regex replacementStringForResult:result inString:value offset:0 template:@"$1"];
+     if (dateString == nil) {
+         return nil;
+     }
+     NSDate *date = [[WMFFeedNewsStory dateFormatter] dateFromString:dateString];
+     return date;
 }
 
 + (nullable NSString *)semanticFeaturedArticleTitleFromStoryHTML:(NSString *)storyHTML siteURL:(NSURL *)siteURL {

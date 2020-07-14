@@ -13,10 +13,10 @@ extension WMFContentGroup {
     public func imageURLsCompatibleWithTraitCollection(_ traitCollection: UITraitCollection, dataStore: MWKDataStore) -> Set<URL>? {
         switch contentGroupKind {
         case .pictureOfTheDay:
-            guard let imageInfo = contentPreview as? WMFFeedImage else {
+            guard let imageInfo = contentPreview as? FeedDay.PictureOfTheDay else {
                 return nil
             }
-            let imageURL = URL(string: WMFChangeImageSourceURLSizePrefix(imageInfo.imageThumbURL.absoluteString, traitCollection.wmf_leadImageWidth)) ?? imageInfo.imageThumbURL
+            let imageURL = URL(string: WMFChangeImageSourceURLSizePrefix(imageInfo.thumbnail.source, traitCollection.wmf_leadImageWidth)) ?? imageInfo.imageThumbURL
             return [imageURL]
         case .announcement:
             guard let announcement = contentPreview as? WMFAnnouncement else {

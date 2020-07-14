@@ -1,18 +1,18 @@
 import UIKit
 
 extension NewsCollectionViewCell {
-    public func configure(with story: WMFFeedNewsStory, dataStore: MWKDataStore, showArticles: Bool = true, theme: Theme, layoutOnly: Bool) {
-        let previews = story.articlePreviews ?? []
-        descriptionHTML = story.storyHTML
+    public func configure(with story: FeedDay.NewsStory, dataStore: MWKDataStore, showArticles: Bool = true, theme: Theme, layoutOnly: Bool) {
+        let previews = story.links ?? []
+        descriptionHTML = story.story
         
         if showArticles {
             articles = previews.map { (articlePreview) -> CellArticle in
-                return CellArticle(articleURL:articlePreview.articleURL, title: articlePreview.displayTitle, titleHTML: articlePreview.displayTitleHTML, description: articlePreview.descriptionOrSnippet, imageURL: articlePreview.thumbnailURL)
+                return CellArticle(articleURL:articlePreview.articleURL, title: articlePreview.displayTitle, titleHTML: articlePreview.displayTitle, description: articlePreview.descriptionOrSnippet, imageURL: articlePreview.thumbnail?.url)
             }
         }
 
         
-        let articleLanguage = story.articlePreviews?.first?.articleURL.wmf_language
+        let articleLanguage = story.links?.first?.articleURL.wmf_language
         descriptionLabel.accessibilityLanguage = articleLanguage
         semanticContentAttributeOverride = MWLanguageInfo.semanticContentAttribute(forWMFLanguage: articleLanguage)
         
