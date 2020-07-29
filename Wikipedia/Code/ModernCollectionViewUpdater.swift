@@ -34,7 +34,6 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
             diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: false)
         }
         delegate?.collectionViewUpdater(self, didUpdate: collectionView)
-
     }
     
     func performFetch() {
@@ -44,6 +43,5 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
             assert(false)
             DDLogError("Error fetching \(String(describing: fetchedResultsController.fetchRequest.predicate)) for \(String(describing: self.delegate)): \(error)")
         }
-        collectionView.reloadData()
     }
 }
