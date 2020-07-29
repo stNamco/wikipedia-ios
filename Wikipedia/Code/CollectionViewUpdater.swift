@@ -46,7 +46,7 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         delegate?.collectionViewUpdater(self, willUpdate: collectionView)
-        diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
+        diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: isGranularUpdatingEnabled)
         delegate?.collectionViewUpdater(self, didUpdate: collectionView)
     }
     
