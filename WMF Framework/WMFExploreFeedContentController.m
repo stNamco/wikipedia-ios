@@ -9,6 +9,8 @@
 #import <WMF/WMFAssertions.h>
 #import <WMF/WMF-Swift.h>
 
+#define EXPLORE_FEED_DEBUG DEBUG && 0
+
 NSString *const WMFExploreFeedContentControllerBusyStateDidChange = @"WMFExploreFeedContentControllerBusyStateDidChange";
 const NSInteger WMFExploreFeedMaximumNumberOfDays = 30;
 static const NSTimeInterval WMFFeedRefreshTimeoutInterval = 60;
@@ -34,7 +36,9 @@ NSString *const WMFExploreFeedControllerWillUpdateNotification = @"WMFExploreFee
 @property (nonatomic, strong) ExploreFeedPreferencesUpdateCoordinator *exploreFeedPreferencesUpdateCoordinator;
 @property (nonatomic, nullable) NSNumber *cachedCountOfVisibleContentGroupKinds;
 @property (nonatomic, strong) NSDictionary<NSString *, NSNumber *> *sortOrderBySiteURLDatabaseKey;
-
+#if EXPLORE_FEED_DEBUG
+@property (nonatomic, readwrite) NSInteger daysAgo;
+#endif
 @end
 
 @implementation WMFExploreFeedContentController
@@ -46,6 +50,9 @@ NSString *const WMFExploreFeedControllerWillUpdateNotification = @"WMFExploreFee
     if (self) {
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
+#if EXPLORE_FEED_DEBUG
+        self.daysAgo = 28;
+#endif
     }
     return self;
 }
@@ -157,6 +164,10 @@ NSString *const WMFExploreFeedControllerWillUpdateNotification = @"WMFExploreFee
 }
 
 - (void)updateFeedSourcesWithDate:(nullable NSDate *)date userInitiated:(BOOL)wasUserInitiated completion:(nullable dispatch_block_t)completion {
+#if EXPLORE_FEED_DEBUG
+    date = [NSDate dateWithTimeIntervalSinceNow:-86400 * self.daysAgo];
+    self.daysAgo -= 1;
+#endif
     WMFAssertMainThread(@"updateFeedSources: must be called on the main thread");
     WMFAsyncBlockOperation *op = [[WMFAsyncBlockOperation alloc] initWithAsyncBlock:^(WMFAsyncBlockOperation *_Nonnull op) {
         dispatch_async(dispatch_get_main_queue(), ^{

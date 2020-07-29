@@ -161,9 +161,11 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
         
         isLoadingOlderContent = true
+        collectionViewUpdater?.isGranularUpdatingEnabled = false
         FeedFunnel.shared.logFeedRefreshed()
         updateFeedSources(with: (nextOldestDate as NSDate).wmf_midnightLocalDateForEquivalentUTC, userInitiated: false) {
             self.isLoadingOlderContent = false
+            self.collectionViewUpdater?.isGranularUpdatingEnabled = true
         }
     }
 
@@ -258,9 +260,11 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         } else {
             updater = LegacyCollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView)
         }
+        updater.isSpringAnimationEnabled = true
+        layout.slideInNewContentFromTheTop = true
+        layout.animateItems = true
         collectionViewUpdater = updater
         updater.delegate = self
-        updater.isSlidingNewContentInFromTheTopEnabled = true
         updater.performFetch()
     }
     
