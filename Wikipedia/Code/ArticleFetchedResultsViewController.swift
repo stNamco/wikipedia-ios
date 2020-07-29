@@ -4,7 +4,7 @@ import WMF
 @objc(WMFArticleFetchedResultsViewController)
 class ArticleFetchedResultsViewController: ArticleCollectionViewController, CollectionViewUpdaterDelegate {
     var fetchedResultsController: NSFetchedResultsController<WMFArticle>!
-    var collectionViewUpdater: LegacyCollectionViewUpdater<WMFArticle>!
+    var collectionViewUpdater: CollectionViewUpdater!
 
     open func setupFetchedResultsController(with dataStore: MWKDataStore) {
         assert(false, "Subclassers should override this method")
@@ -13,7 +13,7 @@ class ArticleFetchedResultsViewController: ArticleCollectionViewController, Coll
     @objc override var dataStore: MWKDataStore! {
         didSet {
             setupFetchedResultsController(with: dataStore)
-            collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+            collectionViewUpdater = CollectionViewUpdaterForTheCurrentPlatform(with: fetchedResultsController, collectionView: collectionView, dataSource: self)
             collectionViewUpdater?.delegate = self
         }
     }

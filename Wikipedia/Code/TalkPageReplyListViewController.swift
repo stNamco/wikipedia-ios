@@ -17,7 +17,7 @@ class TalkPageReplyListViewController: ColumnarCollectionViewController {
     
     private let reuseIdentifier = "TalkPageReplyCell"
     
-    private var collectionViewUpdater: LegacyCollectionViewUpdater<TalkPageReply>!
+    private var collectionViewUpdater: CollectionViewUpdater!
 
     private lazy var beKindInputAccessoryView: BeKindInputAccessoryView = BeKindInputAccessoryView.wmf_viewFromClassNib()
     
@@ -111,7 +111,7 @@ class TalkPageReplyListViewController: ColumnarCollectionViewController {
 
         isRefreshControlEnabled = true
         registerCells()
-        setupLegacyCollectionViewUpdater()
+        setupCollectionViewUpdater()
         setupBackgroundTap()
         setupNavigationBar()
         
@@ -299,8 +299,8 @@ private extension TalkPageReplyListViewController {
         layoutManager.register(TalkPageReplyFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: TalkPageReplyFooterView.identifier, addPlaceholder: true)
     }
     
-    func setupLegacyCollectionViewUpdater() {
-        collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+    func setupCollectionViewUpdater() {
+        collectionViewUpdater = CollectionViewUpdaterForTheCurrentPlatform(with: fetchedResultsController, collectionView: collectionView, dataSource: self)
         collectionViewUpdater?.delegate = self
         collectionViewUpdater?.performFetch()
     }

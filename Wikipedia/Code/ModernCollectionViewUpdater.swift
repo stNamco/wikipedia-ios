@@ -2,7 +2,7 @@
 @available(iOS 13, *)
 class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, CollectionViewUpdater, NSFetchedResultsControllerDelegate {
     var delegate: CollectionViewUpdaterDelegate?
-    var isGranularUpdatingEnabled: Bool = false
+    var isGranularUpdatingEnabled: Bool = true
     var isSpringAnimationEnabled: Bool = false
     private let collectionView: UICollectionView
     let fetchedResultsController: NSFetchedResultsController<T>
@@ -31,7 +31,7 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
                 diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
             }
         } else {
-            diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: false)
+            collectionView.reloadData()
         }
         delegate?.collectionViewUpdater(self, didUpdate: collectionView)
     }

@@ -1,4 +1,5 @@
 /// LegacyCollectionViewUpdater handles UICollectionView updates via performBatchUpdates
+@available(iOS, deprecated: 13.0)
 class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, CollectionViewUpdater, NSFetchedResultsControllerDelegate {
     
     let fetchedResultsController: NSFetchedResultsController<T>

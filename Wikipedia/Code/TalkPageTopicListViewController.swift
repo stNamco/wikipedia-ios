@@ -18,7 +18,7 @@ class TalkPageTopicListViewController: ColumnarCollectionViewController {
     
     private let reuseIdentifier = "TalkPageTopicCell"
     
-    private var collectionViewUpdater: LegacyCollectionViewUpdater<TalkPageTopic>!
+    private var collectionViewUpdater: CollectionViewUpdater!
     private var cellLayoutEstimate: ColumnarCollectionViewLayoutHeightEstimate?
     
     private let siteURL: URL
@@ -53,7 +53,7 @@ class TalkPageTopicListViewController: ColumnarCollectionViewController {
         
         isRefreshControlEnabled = true
         registerCells()
-        setupLegacyCollectionViewUpdater()
+        setupCollectionViewUpdater()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -166,13 +166,11 @@ private extension TalkPageTopicListViewController {
         layoutManager.register(TalkPageTopicCell.self, forCellWithReuseIdentifier: reuseIdentifier, addPlaceholder: true)
     }
     
-    func setupLegacyCollectionViewUpdater() {
-        collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+    func setupCollectionViewUpdater() {
+        collectionViewUpdater = CollectionViewUpdaterForTheCurrentPlatform(with: fetchedResultsController, collectionView: collectionView, dataSource: self)
         collectionViewUpdater?.delegate = self
         collectionViewUpdater?.performFetch()
     }
-    
-    
     
     func configure(cell: TalkPageTopicCell, at indexPath: IndexPath) {
         let topic = fetchedResultsController.object(at: indexPath)

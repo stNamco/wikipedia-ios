@@ -68,7 +68,7 @@ class ReadingListEntryCollectionViewController: ColumnarCollectionViewController
     
     override func viewWillAppear(_ animated: Bool) {
         setupFetchedResultsController()
-        setupLegacyCollectionViewUpdater()
+        setupCollectionViewUpdater()
         fetch()
         super.viewWillAppear(animated)
     }

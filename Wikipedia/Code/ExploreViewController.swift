@@ -253,16 +253,7 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "midnightUTCDate", ascending: false), NSSortDescriptor(key: "dailySortPriority", ascending: true), NSSortDescriptor(key: "date", ascending: false)]
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: dataStore.viewContext, sectionNameKeyPath: "midnightUTCDate", cacheName: nil)
         fetchedResultsController = frc
-        let updater: CollectionViewUpdater
-        if #available(iOS 13, *) {
-            updater = ModernCollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView, cellProvider: { (collectionView, indexPath, itemIdentifier) in
-                return self.collectionView(collectionView, cellForItemAt: indexPath)
-            }, supplementaryViewProvider: {  (collectionView, kind, indexPath) in
-                return self.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
-            })
-        } else {
-            updater = LegacyCollectionViewUpdater(fetchedResultsController: frc, collectionView: collectionView)
-        }
+        let updater = CollectionViewUpdaterForTheCurrentPlatform(with: frc, collectionView: collectionView, dataSource: self)
         updater.isSpringAnimationEnabled = true
         layout.slideInNewContentFromTheTop = true
         layout.animateItems = true

@@ -2,7 +2,7 @@ protocol Collection: class {
     var collectionView: UICollectionView { get set }
 }
 
-protocol UpdatableCollection: Collection, CollectionViewUpdaterDelegate {
+protocol UpdatableCollection: Collection, CollectionViewUpdaterDelegate, UICollectionViewDataSource {
     associatedtype T: NSManagedObject
     var dataStore: MWKDataStore { get }
     var collectionViewUpdater: CollectionViewUpdater? { get set }
@@ -13,11 +13,11 @@ protocol UpdatableCollection: Collection, CollectionViewUpdaterDelegate {
 }
 
 extension UpdatableCollection {
-    func setupLegacyCollectionViewUpdater() {
+    func setupCollectionViewUpdater() {
         guard let fetchedResultsController = fetchedResultsController else {
             return
         }
-        collectionViewUpdater = LegacyCollectionViewUpdater(fetchedResultsController: fetchedResultsController, collectionView: collectionView)
+        collectionViewUpdater = CollectionViewUpdaterForTheCurrentPlatform(with: fetchedResultsController, collectionView: collectionView, dataSource: self)
         collectionViewUpdater?.delegate = self
     }
     
@@ -27,7 +27,7 @@ extension UpdatableCollection {
 
     func reset() {
         setupFetchedResultsController()
-        setupLegacyCollectionViewUpdater()
+        setupCollectionViewUpdater()
         fetch()
     }
 }
