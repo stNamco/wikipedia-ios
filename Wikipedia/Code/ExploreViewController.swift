@@ -119,7 +119,12 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
     
     // MARK - Scroll
     
-    var isLoadingOlderContent: Bool = false
+    var isLoadingOlderContent: Bool = false {
+        didSet {
+            collectionViewUpdater?.isSpringAnimationEnabled = !isLoadingOlderContent
+        }
+    }
+    
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         guard !isLoadingOlderContent else {
@@ -161,11 +166,9 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         }
         
         isLoadingOlderContent = true
-        collectionViewUpdater?.isGranularUpdatingEnabled = false
         FeedFunnel.shared.logFeedRefreshed()
         updateFeedSources(with: (nextOldestDate as NSDate).wmf_midnightLocalDateForEquivalentUTC, userInitiated: false) {
             self.isLoadingOlderContent = false
-            self.collectionViewUpdater?.isGranularUpdatingEnabled = true
         }
     }
 
