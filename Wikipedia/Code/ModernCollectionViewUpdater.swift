@@ -31,7 +31,7 @@ class ModernCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
                 diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: true)
             }
         } else {
-            collectionView.reloadData()
+            diffableDataSourceReference.applySnapshot(snapshot, animatingDifferences: false)
         }
         delegate?.collectionViewUpdater(self, didUpdate: collectionView)
     }

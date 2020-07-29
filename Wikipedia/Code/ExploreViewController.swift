@@ -24,8 +24,6 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         
         title = CommonStrings.exploreTabTitle
 
-        NotificationCenter.default.addObserver(self, selector: #selector(exploreFeedPreferencesDidSave(_:)), name: NSNotification.Name.WMFExploreFeedPreferencesDidSave, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(exploreFeedWillUpdate(_:)), name: NSNotification.Name.WMFExploreFeedControllerWillUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(articleDidChange(_:)), name: NSNotification.Name.WMFArticleUpdated, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(articleDeleted(_:)), name: NSNotification.Name.WMFArticleDeleted, object: nil)
 #if UI_TEST
@@ -505,9 +503,6 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         cell.undoType = group.undoType
         cell.apply(theme: theme)
         cell.delegate = self
-        if group.undoType == .contentGroupKind {
-            indexPathsForCollapsedCellsThatCanReappear.insert(indexPath)
-        }
     }
     
     override func apply(theme: Theme) {
@@ -627,29 +622,6 @@ class ExploreViewController: ColumnarCollectionViewController, ExploreCardViewCo
         dataStore.feedContentController.debugChaos()
     }
     #endif
-    
-    // MARK - CollectionViewUpdaterDelegate
-    
-    var indexPathsForCollapsedCellsThatCanReappear = Set<IndexPath>()
-    
-    private func reloadVisibleCells() {
-        for indexPath in collectionView.indexPathsForVisibleItems {
-            guard let cell = collectionView.cellForItem(at: indexPath) as? ExploreCardCollectionViewCell else {
-                continue
-            }
-            configure(cell: cell, forItemAt: indexPath, layoutOnly: false)
-        }
-    }
-    
-    // MARK: CollectionViewUpdaterDelegate
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, willUpdate collectionView: UICollectionView) {
-        
-    }
-    
-    func collectionViewUpdater(_ updater: CollectionViewUpdater, didUpdate collectionView: UICollectionView) {
-        layout.slideInNewContentFromTheTop = false
-    }
 
     // MARK: Event logging
 
@@ -835,25 +807,6 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
             DDLogError("Error saving after cell customization update: \(error)")
         }
     }
-
-    @objc func exploreFeedPreferencesDidSave(_ note: Notification) {
-        DispatchQueue.main.async {
-            for indexPath in self.indexPathsForCollapsedCellsThatCanReappear {
-                guard self.fetchedResultsController?.isValidIndexPath(indexPath) ?? false else {
-                    continue
-                }
-                self.layoutCache.invalidateGroupKey(self.groupKey(at: indexPath))
-                self.collectionView.collectionViewLayout.invalidateLayout()
-            }
-            self.indexPathsForCollapsedCellsThatCanReappear = []
-        }
-    }
-    
-    @objc func exploreFeedWillUpdate(_ note: Notification) {
-        DispatchQueue.main.async {
-            self.layout.slideInNewContentFromTheTop = true
-        }
-    }
     
     @objc func articleDidChange(_ note: Notification) {
         guard
@@ -961,9 +914,6 @@ extension ExploreViewController: ExploreCardCollectionViewCellDelegate {
             dataStore.feedContentController.toggleContentGroup(of: group.contentGroupKind, isOn: true, waitForCallbackFromCoordinator: false, apply: true, updateFeed: false)
         }
         group.undoType = .none
-        if let indexPath = fetchedResultsController?.indexPath(forObject: group) {
-            indexPathsForCollapsedCellsThatCanReappear.remove(indexPath)
-        }
         toggleVisibilityOfGroupToTriggerVisualChange(group)
     }
     
