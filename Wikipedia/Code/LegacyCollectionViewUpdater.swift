@@ -8,7 +8,7 @@ class LegacyCollectionViewUpdater<T: NSFetchRequestResult>: NSObject, Collection
     var objectChanges: [WMFObjectChange] = []
     weak var delegate: CollectionViewUpdaterDelegate?
     
-    var isGranularUpdatingEnabled: Bool = true // when set to false, individual updates won't be pushed to the collection view, only reloadData()
+    var isGranularUpdatingEnabled: Bool = true
     
     required init(fetchedResultsController: NSFetchedResultsController<T>, collectionView: UICollectionView) {
         self.fetchedResultsController = fetchedResultsController
