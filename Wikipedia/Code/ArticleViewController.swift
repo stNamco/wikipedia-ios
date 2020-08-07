@@ -887,7 +887,10 @@ private extension ArticleViewController {
     }
     
     func setupSearchButton() {
-        navigationItem.rightBarButtonItem = AppSearchBarButtonItem.newAppSearchBarButtonItem
+//        navigationItem.rightBarButtonItem = AppSearchBarButtonItem.newAppSearchBarButtonItem
+        if #available(iOS 13.0, *) {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(launchArticleAsLivingDocumentModal))
+        }
     }
     
     func setupMessagingController() {
@@ -974,8 +977,11 @@ private extension ArticleViewController {
 }
 
 extension ArticleViewController {
-    func presentEmbedded(_ viewController: UIViewController, style: WMFThemeableNavigationControllerStyle) {
+    func presentEmbedded(_ viewController: UIViewController, style: WMFThemeableNavigationControllerStyle, modalPresentationStyleOverride: UIModalPresentationStyle? = nil) {
         let nc = WMFThemeableNavigationController(rootViewController: viewController, theme: theme, style: style)
+        if let modalPresentationStyle = modalPresentationStyleOverride {
+            nc.modalPresentationStyle = modalPresentationStyle
+        }
         present(nc, animated: true)
     }
 }

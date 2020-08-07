@@ -63,9 +63,14 @@ extension ArticleViewController {
         issuesVC.issues = issues
         presentEmbedded(issuesVC, style: .sheet)
     }
+
+    @available(iOS 13.0, *)
+    @objc func launchArticleAsLivingDocumentModal() {
+        let articleAsLivingDocVC = ArticleAsLivingDocumentViewController()
+        articleAsLivingDocVC.modalPresentationStyle = .automatic
+        presentEmbedded(articleAsLivingDocVC, style: .sheet, modalPresentationStyleOverride: .automatic)
+    }
 }
-
-
 
 extension ArticleViewController: WMFLanguagesViewControllerDelegate {
     func languagesController(_ controller: WMFLanguagesViewController, didSelectLanguage language: MWKLanguageLink) {

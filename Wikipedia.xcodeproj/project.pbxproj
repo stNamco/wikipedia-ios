@@ -2005,7 +2005,7 @@
 		D84C36201F32404700895FA1 /* OnThisDayExploreCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04034371F059243001B837B /* OnThisDayExploreCollectionViewCell.swift */; };
 		D84C36391F3241ED00895FA1 /* WMFGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E8043E1C0CDF850065EBC0 /* WMFGradientView.m */; };
 		D84C363A1F3241F100895FA1 /* WMFGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E8043D1C0CDF850065EBC0 /* WMFGradientView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D84C363B1F32422D00895FA1 /* OnThisDayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B423721EFE20E300D3DC4C /* OnThisDayTimelineView.swift */; };
+		D84C363B1F32422D00895FA1 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B423721EFE20E300D3DC4C /* TimelineView.swift */; };
 		D84C363C1F32428A00895FA1 /* CircledRankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8497F631EE09BE600100CBD /* CircledRankView.swift */; };
 		D84C363D1F32438B00895FA1 /* SizeThatFitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8497F681EE09D0200100CBD /* SizeThatFitsView.swift */; };
 		D84C363E1F32441800895FA1 /* WMFDynamicTypeExtentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D1B4591DDD02BB004FCAE6 /* WMFDynamicTypeExtentions.swift */; };
@@ -2916,6 +2916,18 @@
 		D8FAC7DD1D6F88AB00C2A6BC /* WMF.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D844D96C1D6CB2600042D692 /* WMF.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D8FEECCD1DE3729400B883F0 /* WMFChange.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FEECCC1DE3729400B883F0 /* WMFChange.m */; };
 		E1CFD6E6210C103900D8E37C /* ExploreCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83CA612920D1675800EF0C4A /* ExploreCardViewController.swift */; };
+		FF64C73D24D22B9B0000106B /* ArticleAsLivingDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF64C73C24D22B9B0000106B /* ArticleAsLivingDocumentViewController.swift */; };
+		FF64C74124D389F50000106B /* BasicLivingDocCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF64C73F24D389F50000106B /* BasicLivingDocCollectionViewCell.swift */; };
+		FF64C74224D389F50000106B /* BasicLivingDocCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF64C74024D389F50000106B /* BasicLivingDocCollectionViewCell.xib */; };
+		FFA1BFE524DC75230065E1E7 /* DateHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */; };
+		FFA1BFE624DC77390065E1E7 /* DateHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */; };
+		FFA1BFE724DC773A0065E1E7 /* DateHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */; };
+		FFA1BFE824DC773B0065E1E7 /* DateHeaderReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */; };
+		FFA1BFEB24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1BFE924DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.swift */; };
+		FFA1BFEC24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */; };
+		FFA1BFED24DCDED10065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */; };
+		FFA1BFEE24DCDED20065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */; };
+		FFA1BFEF24DCDED20065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */; };
 		FFE891462445150B0058B642 /* AppTabBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE891452445150B0058B642 /* AppTabBarDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -3805,7 +3817,7 @@
 		B0B423601EF9D69C00D3DC4C /* OnThisDayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnThisDayViewController.swift; sourceTree = "<group>"; };
 		B0B423661EF9D6D500D3DC4C /* OnThisDayViewControllerHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnThisDayViewControllerHeader.swift; sourceTree = "<group>"; };
 		B0B423671EF9D6D500D3DC4C /* OnThisDayViewControllerHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OnThisDayViewControllerHeader.xib; sourceTree = "<group>"; };
-		B0B423721EFE20E300D3DC4C /* OnThisDayTimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnThisDayTimelineView.swift; path = Wikipedia/Code/OnThisDayTimelineView.swift; sourceTree = SOURCE_ROOT; };
+		B0B423721EFE20E300D3DC4C /* TimelineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TimelineView.swift; path = Wikipedia/Code/TimelineView.swift; sourceTree = SOURCE_ROOT; };
 		B0B423781F0211A000D3DC4C /* WMFFeedArticlePreview+DescriptionOrSnippet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WMFFeedArticlePreview+DescriptionOrSnippet.swift"; sourceTree = "<group>"; };
 		B0B4CF081CC0500E0051DF7A /* WMFArticleLanguagesSectionHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WMFArticleLanguagesSectionHeader.h; sourceTree = "<group>"; };
 		B0B4CF091CC0500E0051DF7A /* WMFArticleLanguagesSectionHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WMFArticleLanguagesSectionHeader.m; sourceTree = "<group>"; };
@@ -4743,6 +4755,12 @@
 		D8FFF6922031CB3D00A028E0 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = my; path = my.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		D8FFF6932031CB3E00A028E0 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = cy; path = cy.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		D8FFF6942031CB4000A028E0 /* tcy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = tcy; path = tcy.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		FF64C73C24D22B9B0000106B /* ArticleAsLivingDocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleAsLivingDocumentViewController.swift; sourceTree = "<group>"; };
+		FF64C73F24D389F50000106B /* BasicLivingDocCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicLivingDocCollectionViewCell.swift; sourceTree = "<group>"; };
+		FF64C74024D389F50000106B /* BasicLivingDocCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BasicLivingDocCollectionViewCell.xib; sourceTree = "<group>"; };
+		FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderReusableView.swift; sourceTree = "<group>"; };
+		FFA1BFE924DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleAsLivingDocHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
+		FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArticleAsLivingDocHeaderCollectionViewCell.xib; sourceTree = "<group>"; };
 		FFE891452445150B0058B642 /* AppTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabBarDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -5949,6 +5967,7 @@
 		67DC5BDB23A00DF500B03A84 /* Article */ = {
 			isa = PBXGroup;
 			children = (
+				FF64C73E24D389390000106B /* ArticleAsLivingDocumentCells */,
 				67DC5BEE23A1427C00B03A84 /* ActionHandlerScript.swift */,
 				00A7946A245CA4E60063BA18 /* ArticleSurveyTimerController.swift */,
 				67DC5BE223A017CA00B03A84 /* ArticleViewController.swift */,
@@ -5974,6 +5993,7 @@
 				83F1095E23D09F80003F3E9E /* ArticleViewController+WIconPopover.swift */,
 				67ADEE9523A2CFFB0000CAF7 /* ArticleWebMessagingController.swift */,
 				83DAA9AF23FEB611002D5716 /* ReferenceBackLinksViewController.swift */,
+				FF64C73C24D22B9B0000106B /* ArticleAsLivingDocumentViewController.swift */,
 				D8E6FF7524058AC600686272 /* WMFWebView.h */,
 				D8E6FF7624058AC600686272 /* WMFWebView.m */,
 				B0DE92301D6E3A2000EC76A7 /* UIBarButtonItem Popover Message */,
@@ -8222,7 +8242,7 @@
 				7A2432EC1FCF469100FB4BA5 /* SetupView.swift */,
 				B0016CBE2136105900FA1096 /* SetupButton.swift */,
 				D8497F681EE09D0200100CBD /* SizeThatFitsView.swift */,
-				B0B423721EFE20E300D3DC4C /* OnThisDayTimelineView.swift */,
+				B0B423721EFE20E300D3DC4C /* TimelineView.swift */,
 				B0D1B4591DDD02BB004FCAE6 /* WMFDynamicTypeExtentions.swift */,
 				7A3159CE206458B000143119 /* ReadingListAlertType.swift */,
 				D84C36061F323FEE00895FA1 /* Collection View Cells */,
@@ -8248,6 +8268,18 @@
 				6734F051227B634900BDDB94 /* ActionButton.swift */,
 			);
 			name = UI;
+			sourceTree = "<group>";
+		};
+		FF64C73E24D389390000106B /* ArticleAsLivingDocumentCells */ = {
+			isa = PBXGroup;
+			children = (
+				FFA1BFE424DC75230065E1E7 /* DateHeaderReusableView.swift */,
+				FF64C73F24D389F50000106B /* BasicLivingDocCollectionViewCell.swift */,
+				FF64C74024D389F50000106B /* BasicLivingDocCollectionViewCell.xib */,
+				FFA1BFE924DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.swift */,
+				FFA1BFEA24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib */,
+			);
+			path = ArticleAsLivingDocumentCells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -9033,6 +9065,7 @@
 				7A16C4EB212D941C00F0D5EC /* SubSettingsViewController.xib in Resources */,
 				7A8422582268DA2C0074648E /* InsertMediaSearchResultPreviewingViewController.xib in Resources */,
 				6782DBF7234537CF003FA21B /* DiffHeaderTitleView.xib in Resources */,
+				FF64C74224D389F50000106B /* BasicLivingDocCollectionViewCell.xib in Resources */,
 				D8D92B5D1DF22E1700B95311 /* NotificationBackgroundErrorIcon@2x.png in Resources */,
 				B0866F471CCAEBE40088A789 /* WMFArticleLanguagesSectionFooter.xib in Resources */,
 				B0B4236D1EF9D6D500D3DC4C /* OnThisDayViewControllerHeader.xib in Resources */,
@@ -9081,6 +9114,7 @@
 				7ABAD6B920338CFB006A364C /* ReadingListDetailUnderBarViewController.xib in Resources */,
 				B01490A11DB96BD6007F5391 /* WMFReferencePanels.storyboard in Resources */,
 				D87234041E1FF18100751E83 /* Places.storyboard in Resources */,
+				FFA1BFEC24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */,
 				676070A42280987C00A81F09 /* TalkPageTopicNewViewController.xib in Resources */,
 				83023C0B20E51DDF00EC7592 /* SearchLanguagesBarViewController.xib in Resources */,
 				BA7683C31F30C56300A487AA /* ImageDimmingExampleViewController.xib in Resources */,
@@ -9218,6 +9252,7 @@
 				D8A42BD21E815A9C00D8E281 /* WMFReferencePopoverMessageViewController.storyboard in Resources */,
 				7A827661226E4E41000A2389 /* EditPreviewInternalLinkViewController.xib in Resources */,
 				B0EFCD751EBF13B2008F36E5 /* LibrariesUsed.plist in Resources */,
+				FFA1BFEE24DCDED20065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */,
 				D8533EDC1ECF581600E44F86 /* NewsCollectionViewHeader.xib in Resources */,
 				83E52BBC1F681F940045E776 /* ShareAFactViewController.xib in Resources */,
 				7A84224F2268BBE70074648E /* InsertMediaImageInfoView.xib in Resources */,
@@ -9342,6 +9377,7 @@
 				D8CE26591E698E2400DAE2E0 /* WMFReferencePopoverMessageViewController.storyboard in Resources */,
 				7A82765F226E4E41000A2389 /* EditPreviewInternalLinkViewController.xib in Resources */,
 				B0EFCD731EBF13B2008F36E5 /* LibrariesUsed.plist in Resources */,
+				FFA1BFEF24DCDED20065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */,
 				D8533EDA1ECF581600E44F86 /* NewsCollectionViewHeader.xib in Resources */,
 				83E52BBA1F681F940045E776 /* ShareAFactViewController.xib in Resources */,
 				7A84224D2268BBE70074648E /* InsertMediaImageInfoView.xib in Resources */,
@@ -9466,6 +9502,7 @@
 				D8EC3F591E9BDA35006712EB /* WMFReferencePopoverMessageViewController.storyboard in Resources */,
 				7A827660226E4E41000A2389 /* EditPreviewInternalLinkViewController.xib in Resources */,
 				B0EFCD741EBF13B2008F36E5 /* LibrariesUsed.plist in Resources */,
+				FFA1BFED24DCDED10065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.xib in Resources */,
 				D8533EDB1ECF581600E44F86 /* NewsCollectionViewHeader.xib in Resources */,
 				83E52BBB1F681F940045E776 /* ShareAFactViewController.xib in Resources */,
 				7A84224E2268BBE70074648E /* InsertMediaImageInfoView.xib in Resources */,
@@ -10043,6 +10080,7 @@
 				B0F9299F1F84789D002A0788 /* WMFWelcomeInitialViewController.swift in Sources */,
 				6782DBCD2343FDF2003FA21B /* DiffListUneditedCell.swift in Sources */,
 				D8A47C8F23D7338C002AA823 /* ArticleViewController+TableOfContents.swift in Sources */,
+				FF64C74124D389F50000106B /* BasicLivingDocCollectionViewCell.swift in Sources */,
 				B09B03ED1CE0FB4200009083 /* PageHistorySection.swift in Sources */,
 				D8B166851FD97A0500097D8B /* ViewController.swift in Sources */,
 				7AB809D022675B2300BFAB7C /* ThemeableTextView.swift in Sources */,
@@ -10268,6 +10306,7 @@
 				7A6ED51220ADBF950001849F /* ReadingListsFunnel.swift in Sources */,
 				83B01F9523DB41D7001185F4 /* ArticleViewController+FindInPage.swift in Sources */,
 				B0E804BF1C0CE0B40065EBC0 /* DDLog+WMFLogger.m in Sources */,
+				FFA1BFEB24DCD4740065E1E7 /* ArticleAsLivingDocHeaderCollectionViewCell.swift in Sources */,
 				0E281A331DC263DE00FA1AB1 /* WMFLegacyReference.swift in Sources */,
 				6734115922735832005B31DA /* TalkPagesController.swift in Sources */,
 				7ABAD6BF20349B91006A364C /* Collection.swift in Sources */,
@@ -10275,6 +10314,7 @@
 				67CEF26F2351113000D5CA6C /* DiffController.swift in Sources */,
 				67D3C453228CB54E001D5741 /* TalkPageReplyComposeView.swift in Sources */,
 				7A6F560521AF527A0076D184 /* TextFormattingInputViewController.swift in Sources */,
+				FFA1BFE524DC75230065E1E7 /* DateHeaderReusableView.swift in Sources */,
 				7AC809C521DD1FE100E8B6E1 /* SectionEditorInputViewsController.swift in Sources */,
 				B083371E1DADB251002860D2 /* WMFWelcomePageViewController.swift in Sources */,
 				6782DBBB2343B861003FA21B /* DiffListViewController.swift in Sources */,
@@ -10299,6 +10339,7 @@
 				8367A27F20D293BE00249A92 /* ColumnarCollectionViewLayoutManager.swift in Sources */,
 				7AEBAD452102117C002FAB41 /* NSFetchedResultsController+IndexPathValidation.swift in Sources */,
 				83F1095F23D09F80003F3E9E /* ArticleViewController+WIconPopover.swift in Sources */,
+				FF64C73D24D22B9B0000106B /* ArticleAsLivingDocumentViewController.swift in Sources */,
 				7A25367721B5AA4F00F841A1 /* ContextualHighlightEditToolbarView.swift in Sources */,
 				D8E6FF6C24056AC300686272 /* ArticleViewController+ContextMenu.swift in Sources */,
 				6734117022773122005B31DA /* TalkPageReplyCell.swift in Sources */,
@@ -10627,7 +10668,7 @@
 				D82972951E4361C60061550A /* WMFKeyValue+CoreDataProperties.m in Sources */,
 				D8C41DDB23FC09EE00353DCE /* NSManagedObjectContext+History.swift in Sources */,
 				67F1375E23C986CD00512B61 /* CacheTaskTracking.swift in Sources */,
-				D84C363B1F32422D00895FA1 /* OnThisDayTimelineView.swift in Sources */,
+				D84C363B1F32422D00895FA1 /* TimelineView.swift in Sources */,
 				835A042D223AD63000D4D758 /* ArticleSummaryController.swift in Sources */,
 				D844D9B81D6CB7980042D692 /* MWKRecentSearchEntry.m in Sources */,
 				D8FA18AF1E1BD891009675C3 /* NSNumberFormatter+WMFExtras.swift in Sources */,
@@ -10687,6 +10728,7 @@
 				7AB6F10222AEF4DF00F552B4 /* UIActivity.ActivityType+CustomTypes.swift in Sources */,
 				D8A42A591E815A9C00D8E281 /* WMFImageURLActivitySource.swift in Sources */,
 				7A27EDA52279F5270010CB24 /* InsertLinkViewController.swift in Sources */,
+				FFA1BFE724DC773A0065E1E7 /* DateHeaderReusableView.swift in Sources */,
 				B0CD9DF01F70997500051843 /* WMFWelcomeLanguagesAnimationView.swift in Sources */,
 				6782DBA02343B7DB003FA21B /* DiffHeaderTitleView.swift in Sources */,
 				830D71D21F704DD40080078B /* ArticleFetchedResultsViewController.swift in Sources */,
@@ -11361,6 +11403,7 @@
 				7A71566F22697AAF0066FEC4 /* InsertMediaCustomImageSizeSettingTableViewCell.swift in Sources */,
 				D82117FD1EE58C080076C040 /* MapAnnotation.swift in Sources */,
 				B0CD9DE01F70997400051843 /* WMFWelcomeIntroductionAnimationView.swift in Sources */,
+				FFA1BFE824DC773B0065E1E7 /* DateHeaderReusableView.swift in Sources */,
 				7A82898D21B34B86005D7EC1 /* TextFormattingCustomViewTableViewCell.swift in Sources */,
 				67E8B07B226A57DE00537BC9 /* AccountViewController.swift in Sources */,
 				7A32078921E40193009E1677 /* SectionEditorMenuItemsController.swift in Sources */,
@@ -11816,6 +11859,7 @@
 				7A71567022697AAF0066FEC4 /* InsertMediaCustomImageSizeSettingTableViewCell.swift in Sources */,
 				D8EC3E7A1E9BDA35006712EB /* ToCInteractionFunnel.m in Sources */,
 				7A82898E21B34B86005D7EC1 /* TextFormattingCustomViewTableViewCell.swift in Sources */,
+				FFA1BFE624DC77390065E1E7 /* DateHeaderReusableView.swift in Sources */,
 				67E8B07C226A57DE00537BC9 /* AccountViewController.swift in Sources */,
 				7A32078A21E40193009E1677 /* SectionEditorMenuItemsController.swift in Sources */,
 				6707C034237DBCEE0017E7B6 /* DiffRevisionTransition.swift in Sources */,
