@@ -15,8 +15,9 @@ class EPCNetworkManager: EPCNetworkManaging {
      */
     private var outputBuffer: [(url: URL, body: NSDictionary)] = []
     
-    init(session: Session = Session.shared) {
-        self.session = session
+    init(session: Session? = nil) {
+    
+        self.session = session ?? Session(configuration: Configuration.current, needsWaitForConnectivity: true)
     }
 
     func schedulePost(url: URL, body: NSDictionary) {

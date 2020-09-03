@@ -33,7 +33,7 @@ open class ImageController : NSObject {
     // MARK: - Initialization
     
     @objc(sharedInstance) public static let shared: ImageController = {
-        let session = Session.urlSession
+        let session = Session.shared.urlSession
         let cache = URLCache.shared
         let fileManager = FileManager.default
         var permanentStorageDirectory = fileManager.wmf_containerURL().appendingPathComponent("Permanent Cache", isDirectory: true)

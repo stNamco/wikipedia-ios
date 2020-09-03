@@ -306,7 +306,7 @@ public class EventLoggingService : NSObject, URLSessionDelegate {
             
             var request = URLRequest(url: url)
             request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-            let session = onlyWiFi ? self.session.wifiOnlyURLSession : self.session.defaultURLSession
+            let session = onlyWiFi ? self.session.wifiOnlyURLSession : self.session.urlSession
             let task = session.dataTask(with: request, completionHandler: { (_, response, error) in
                 guard error == nil,
                     let httpResponse = response as? HTTPURLResponse,

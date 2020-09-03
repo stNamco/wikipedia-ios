@@ -76,14 +76,14 @@ public enum WMFCachePolicy {
     
     public func cloneCentralAuthCookies() {
         // centralauth_ cookies work for any central auth domain - this call copies the centralauth_* cookies from .wikipedia.org to an explicit list of domains. This is  hardcoded because we only want to copy ".wikipedia.org" cookies regardless of WMFDefaultSiteDomain
-        defaultURLSession.configuration.httpCookieStorage?.copyCookiesWithNamePrefix("centralauth_", for: configuration.centralAuthCookieSourceDomain, to: configuration.centralAuthCookieTargetDomains)
+        urlSession.configuration.httpCookieStorage?.copyCookiesWithNamePrefix("centralauth_", for: configuration.centralAuthCookieSourceDomain, to: configuration.centralAuthCookieTargetDomains)
         cacheQueue.async(flags: .barrier) {
             self._isAuthenticated = nil
         }
     }
     
     public func removeAllCookies() {
-        guard let storage = defaultURLSession.configuration.httpCookieStorage else {
+        guard let storage = urlSession.configuration.httpCookieStorage else {
             return
         }
         // Cookie reminders:
@@ -103,14 +103,33 @@ public enum WMFCachePolicy {
         return config
     }
     
+    @objc private static var waitsForConnectivityConfiguration: URLSessionConfiguration {
+        let config = Session.defaultConfiguration
+        config.waitsForConnectivity = true
+        return config
+    }
+    
     private static let permanentCache = PermanentlyPersistableURLCache()
     
-    @objc public static let urlSession: URLSession = {
-        return URLSession(configuration: Session.defaultConfiguration, delegate: sessionDelegate, delegateQueue: sessionDelegate.delegateQueue)
-    }()
+    static func generateURLSession(needsWaitForConnectivity: Bool = false) -> URLSession {
+        let configuration = needsWaitForConnectivity ? waitsForConnectivityConfiguration : defaultConfiguration
+        return URLSession(configuration: configuration, delegate: sessionDelegate, delegateQueue: sessionDelegate.delegateQueue)
+    }
+    
+    private static var activeURLSessions: [URLSession] = []
+    private static let activeURLSessionsQueue = DispatchQueue(label: "Session-activeURLSessionsQueue" + UUID().uuidString)
+    private static func appendActiveURLSession(urlSession: URLSession) {
+        activeURLSessionsQueue.async {
+            self.activeURLSessions.append(urlSession)
+        }
+    }
     
     @objc public static func clearTemporaryCache() {
-        urlSession.configuration.urlCache?.removeAllCachedResponses()
+        activeURLSessionsQueue.async {
+            for urlSession in Session.activeURLSessions {
+                urlSession.configuration.urlCache?.removeAllCachedResponses()
+            }
+        }
     }
     
     private static let sessionDelegate: SessionDelegate = {
@@ -119,13 +138,27 @@ public enum WMFCachePolicy {
     
     private let configuration: Configuration
     
-    public required init(configuration: Configuration) {
+    public required init(configuration: Configuration, urlSession: URLSession? = nil) {
         self.configuration = configuration
+        let urlSession = urlSession ?? Session.generateURLSession()
+        Session.appendActiveURLSession(urlSession: urlSession)
+        self.urlSession = urlSession
+    }
+    convenience init(configuration: Configuration, needsWaitForConnectivity: Bool) {
+        let urlSession = Session.generateURLSession(needsWaitForConnectivity: needsWaitForConnectivity)
+        self.init(configuration: configuration, urlSession: urlSession)
     }
     
     @objc public static let shared = Session(configuration: Configuration.current)
     
-    public let defaultURLSession = Session.urlSession
+    //  DEBT: Seems to me like this urlSession property should be private and no outside access to urlSession
+    //  for manipulation should be allowed.
+    //  Currently only ImageController.swift uses this. Most of ImageController logic has been duplicated into
+    //  ImageCacheController which is widely used in the app. ImageController is no longer used in the app
+    //  and is only referenced in unit tests. As soon as we can disentangle ImageController from tests and use
+    //  ImageCacheController instead, we can delete ImageController and mark this property as private
+    public let urlSession: URLSession
+    
     private let sessionDelegate = Session.sessionDelegate
     private var defaultPermanentCache = Session.permanentCache
     
@@ -136,7 +169,7 @@ public enum WMFCachePolicy {
     }()
     
     public func hasValidCentralAuthCookies(for domain: String) -> Bool {
-        guard let storage = defaultURLSession.configuration.httpCookieStorage else {
+        guard let storage = urlSession.configuration.httpCookieStorage else {
             return false
         }
         let cookies = storage.cookiesWithNamePrefix("centralauth_", for: domain)
@@ -247,7 +280,7 @@ public enum WMFCachePolicy {
             return nil
         }
         
-        let task = defaultURLSession.dataTask(with: request)
+        let task = urlSession.dataTask(with: request)
         sessionDelegate.addCallback(callback: callback, for: task)
         return task
     }
@@ -277,18 +310,18 @@ public enum WMFCachePolicy {
             
         }
         
-        let task = defaultURLSession.dataTask(with: request, completionHandler: cachedCompletion)
+        let task = urlSession.dataTask(with: request, completionHandler: cachedCompletion)
         return task
     }
     
     //tonitodo: utlilize Callback & addCallback/session delegate stuff instead of completionHandler
     public func downloadTask(with url: URL, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask {
-        return defaultURLSession.downloadTask(with: url, completionHandler: completionHandler)
+        return urlSession.downloadTask(with: url, completionHandler: completionHandler)
     }
 
     public func downloadTask(with urlRequest: URLRequest, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTask? {
 
-        return defaultURLSession.downloadTask(with: urlRequest, completionHandler: completionHandler)
+        return urlSession.downloadTask(with: urlRequest, completionHandler: completionHandler)
     }
     
     public func dataTask(with url: URL?, method: Session.Request.Method = .get, bodyParameters: Any? = nil, bodyEncoding: Session.Request.Encoding = .json, headers: [String: String] = [:], cachePolicy: URLRequest.CachePolicy? = nil, priority: Float = URLSessionTask.defaultPriority, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Swift.Void) -> URLSessionDataTask? {
@@ -296,7 +329,7 @@ public enum WMFCachePolicy {
             return nil
         }
         let dataRequest = request(with: url, method: method, bodyParameters: bodyParameters, bodyEncoding: bodyEncoding, headers: headers, cachePolicy: cachePolicy)
-        let task = defaultURLSession.dataTask(with: dataRequest, completionHandler: completionHandler)
+        let task = urlSession.dataTask(with: dataRequest, completionHandler: completionHandler)
         task.priority = priority
         return task
     }
@@ -491,7 +524,7 @@ public enum WMFCachePolicy {
             }
         }
         
-        return defaultURLSession.dataTask(with: request, completionHandler: { (data, response, error) in
+        return urlSession.dataTask(with: request, completionHandler: { (data, response, error) in
             self.handleResponse(response, reattemptLoginOn401Response: reattemptLoginOn401Response)
             cachedCompletion(data, response, error)
         })
