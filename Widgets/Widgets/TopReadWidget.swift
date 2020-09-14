@@ -155,7 +155,7 @@ struct TopReadProvider: TimelineProvider {
 
 	func getTimeline(in context: Context, completion: @escaping (Timeline<TopReadEntry>) -> Void) {
 		dataStore.fetchLatestAvailableTopRead { entry in
-			let timeline = Timeline(entries: [entry], policy: .atEnd)
+            let timeline = Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(60)))
 			completion(timeline)
 		}
 	}
