@@ -150,8 +150,8 @@ final public class ArticleFetcher: Fetcher, CacheFetching {
         }
     }
     
-    private func previewHeaders(with articleURL: URL, mobileHTMLOutput: MobileHTMLType) -> [String: String] {
-        var headers = configuration.pageContentServiceHeaders(for: articleURL.wmf_language)
+    private func previewHeaders(with articleURL: URL, mobileHTMLOutput: MobileHTMLType, forceProd: Bool = false) -> [String: String] {
+        var headers = configuration.pageContentServiceHeaders(for: articleURL, forceProd: forceProd)
         headers[ArticleFetcher.mobileHTMLOutputHeaderKey] = mobileHTMLOutput.rawValue
         headers[ArticleFetcher.acceptHeaderKey] = ArticleFetcher.acceptHTMLValue
         return headers
@@ -166,7 +166,7 @@ final public class ArticleFetcher: Fetcher, CacheFetching {
             throw RequestError.invalidParameters
         }
         let params: [String: String] = ["wikitext": wikitext]
-        let headers = previewHeaders(with: articleURL, mobileHTMLOutput: mobileHTMLOutput)
+        let headers = previewHeaders(with: url, mobileHTMLOutput: mobileHTMLOutput)
         return session.request(with: url, method: .post, bodyParameters: params, bodyEncoding: .json, headers: headers)
     }
     
@@ -178,19 +178,21 @@ final public class ArticleFetcher: Fetcher, CacheFetching {
             throw RequestError.invalidParameters
         }
         
+        let headers: [String: String]
         #if WMF_LOCAL_PAGE_CONTENT_SERVICE || WMF_APPS_LABS_PAGE_CONTENT_SERVICE
         // As of April 2020, the /transform/wikitext/to/html/{article} endpoint is only available on production, not local or staging PCS.
         guard let url = Configuration.production.pageContentServiceAPIURLComponentsForHost(articleURL.host, appending: ["transform", "wikitext", "to", "html", percentEncodedTitle]).url else {
             throw RequestError.invalidParameters
         }
+        headers = previewHeaders(with: url, mobileHTMLOutput: mobileHTMLOutput, forceProd: true)
         #else
         guard let url = configuration.pageContentServiceAPIURLComponentsForHost(articleURL.host, appending: ["transform", "wikitext", "to", "html", percentEncodedTitle]).url else {
             throw RequestError.invalidParameters
         }
+        headers = previewHeaders(with: url, mobileHTMLOutput: mobileHTMLOutput)
         #endif
 
         let params: [String: String] = ["wikitext": wikitext]
-        let headers = previewHeaders(with: articleURL, mobileHTMLOutput: mobileHTMLOutput)
         return session.request(with: url, method: .post, bodyParameters: params, bodyEncoding: .json, headers: headers)
     }
     
@@ -202,7 +204,7 @@ final public class ArticleFetcher: Fetcher, CacheFetching {
         else {
             throw RequestError.invalidParameters
         }
-        let headers = previewHeaders(with: articleURL, mobileHTMLOutput: mobileHTMLOutput)
+        let headers = previewHeaders(with: url, mobileHTMLOutput: mobileHTMLOutput)
         return session.request(with: url, method: .post, bodyParameters: html, bodyEncoding: .html, headers: headers)
     }
 
@@ -293,7 +295,7 @@ final public class ArticleFetcher: Fetcher, CacheFetching {
     }
     
     public func urlRequest(from url: URL, cachePolicy: WMFCachePolicy? = nil, headers: [String: String] = [:]) -> URLRequest? {
-        var requestHeaders = configuration.pageContentServiceHeaders(for: url.wmf_language)
+        var requestHeaders = configuration.pageContentServiceHeaders(for: url)
         requestHeaders.merge(headers)  { (_, updated) in updated }
         let request = urlRequestFromPersistence(with: url, persistType: .article, cachePolicy: cachePolicy, headers: requestHeaders)
 

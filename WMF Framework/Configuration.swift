@@ -181,8 +181,23 @@ public class Configuration: NSObject {
     }
     
     /// Returns the default request headers for Page Content Service API requests
-    public func pageContentServiceHeaders(for wikipediaLanguage: String? = nil) -> [String: String] {
-        guard let apiLanguage = wikipediaLanguage else {
+    public func pageContentServiceHeaders(for url: URL, forceProd: Bool = false) -> [String: String] {
+
+        var maybeApiLanguage: String?
+        
+        switch (self, forceProd) {
+        case (.appsLabsPageContentService, false), (.localPageContentService, false):
+            guard let firstPathComponent = url.pathComponents[safeIndex: 1],
+                  let lang = firstPathComponent.components(separatedBy: ".")[safeIndex: 0] else {
+                return [:]
+            }
+            
+            maybeApiLanguage = lang
+        default:
+            maybeApiLanguage = url.wmf_language
+        }
+        
+        guard let apiLanguage = maybeApiLanguage else {
             return [:]
         }
         // If the language supports variants, only send a single code with variant for that language.
@@ -191,9 +206,9 @@ public class Configuration: NSObject {
         guard let preferredLanguage = Locale.preferredWikipediaLanguageVariant(wmf_language: apiLanguage) else {
             return [:]
         }
+        
         return ["Accept-Language": preferredLanguage]
     }
-    
     
     private let metricsAPIURLComponentsBuilder = APIURLComponentsBuilder.RESTBase.getProductionBuilderFactory()(Domain.wikimedia)
     /// The metrics API lives only on wikimedia.org: https://wikimedia.org/api/rest_v1/
