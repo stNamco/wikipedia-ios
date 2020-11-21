@@ -1639,7 +1639,7 @@ public extension ArticleAsLivingDocViewModel.Event.Large {
             
             let rangeOfUserName = (userInfo as NSString).range(of: userName)
             let rangeValid = rangeOfUserName.location != NSNotFound && rangeOfUserName.location + rangeOfUserName.length <= userInfo.count
-            let userNameHrefString = "#significant-events-username-\(userName)"
+            let userNameHrefString = "#significant-events-username-\(userName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? userName)"
             if rangeValid {
                 
                 let mutableUserInfo = NSMutableString(string: userInfo)
@@ -1711,7 +1711,8 @@ public extension ArticleAsLivingDocViewModel.Event.Large {
         let rangeValid = rangeOfUserName.location != NSNotFound && rangeOfUserName.location + rangeOfUserName.length <= userInfo.count
         
         guard let title = "User:\(userName)".percentEncodedPageTitleForPathComponents,
-              let userNameURL = Configuration.current.articleURLForHost(Configuration.Domain.englishWikipedia, appending: [title]).url,
+              let baseURL = Configuration.current.articleURLForHost(Configuration.Domain.englishWikipedia, appending: []).url,
+              let userNameURL = URL(string: "./\(title)", relativeTo: baseURL),
               rangeValid else {
             let attributedString = NSAttributedString(string: userInfo, attributes: attributes)
             self.userInfo = attributedString

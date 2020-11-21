@@ -429,7 +429,7 @@ class ArticleAsLivingDocViewController: ColumnarCollectionViewController {
 @available(iOS 13.0, *)
 extension ArticleAsLivingDocViewController: ArticleAsLivingDocHorizontallyScrollingCellDelegate, InternalLinkPreviewing {
     func tappedLink(_ url: URL) {
-        guard let fullURL = delegate?.articleURL.resolvingRelativeWikiHref(url.absoluteString) else {
+        guard let fullURL = delegate?.articleURL.resolvingRelativeWikiHref(url.relativeString) else {
             return
         }
         switch Configuration.current.router.destination(for: fullURL) {

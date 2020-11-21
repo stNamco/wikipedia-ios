@@ -404,8 +404,9 @@ class ArticleAsLivingDocController: NSObject {
         let splitItems = anchor.split(separator: "-")
         
         if splitItems.count == 4,
-           splitItems[2] == "username",
-           let userName = String(splitItems[3]).addingPercentEncoding(withAllowedCharacters: CharacterSet.urlPathAllowed) {
+           splitItems[2] == "username" {
+            
+            let userName = splitItems[3]
 
             let href = "./User:\(userName)"
             guard let resolvedURL = articleURL.resolvingRelativeWikiHref(href) else {
