@@ -1,10 +1,12 @@
 import Foundation
 import CocoaLumberjackSwift
 
-class SamplingController: NSObject {
+protocol SamplingControllerDelegate: class {
+    var appInstallID: String? { get }
+    var sessionID: String { get }
+}
 
-    var appInstallId: String?
-    var sessionId: String?
+class SamplingController: NSObject {
 
     /**
      * Serial dispatch queue that enables working with properties in a thread-safe
@@ -22,7 +24,9 @@ class SamplingController: NSObject {
      * Only cache determinations asynchronously via `queue.async`
      */
     private var samplingCache: [EPC.Stream: Bool] = [:]
-
+    
+    weak var delegate: SamplingControllerDelegate?
+    
     /**
      * Compute a boolean function on a random identifier
      * - Parameter stream: name of the stream
@@ -66,7 +70,7 @@ class SamplingController: NSObject {
             return false
         }
 
-        guard let identifier = identifierType == sessionIdentifierType ? sessionId : appInstallId else {
+        guard let identifier = identifierType == sessionIdentifierType ? delegate?.sessionID : delegate?.appInstallID else {
             DDLogError("EPC: Missing token for determining in- vs out-of-sample. Falling back to out-of-sample.")
             cacheSamplingForStream(stream, inSample: false)
             return false

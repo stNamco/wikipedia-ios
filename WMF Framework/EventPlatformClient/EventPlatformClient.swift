@@ -172,7 +172,7 @@ public class EPC: NSObject {
      * The identifier is a string of 20 zero-padded hexadecimal digits
      * representing a uniformly random 80-bit integer.
      */
-    private var sessionID: String {
+    internal var sessionID: String {
         get {
             queue.sync {
                 guard let sID = _sessionID else {
@@ -235,6 +235,7 @@ public class EPC: NSObject {
 
     private init?(legacyEventLoggingService: EventLoggingService) {
         self.legacyEventLoggingService = legacyEventLoggingService
+        
         self.samplingController = SamplingController()
 
         /* The streams that will be retrieved from the API will be the ones that
@@ -258,8 +259,7 @@ public class EPC: NSObject {
 
         super.init()
 
-        self.samplingController.appInstallId = installID
-        self.samplingController.sessionId = sessionID
+        self.samplingController.delegate = self
 
         self.fetchStreamConfiguration(retries: 10, retryDelay: 30)
     }
@@ -797,4 +797,10 @@ public protocol EventInterface: Codable {
      * Check the documentation for `EPC.Schema` for more information.
      */
     static var schema: EPC.Schema { get }
+}
+
+extension EPC: SamplingControllerDelegate {
+    var appInstallID: String? {
+        return installID
+    }
 }
