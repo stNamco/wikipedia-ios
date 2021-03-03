@@ -2,6 +2,8 @@
 // is to simply embed it in a container view which uses such constraints. No need to modify the
 // UIPageViewController subclass at all. WMFWelcomeInitialViewController embeds a UIPageViewController
 // in such a container view.
+import kmmsharedmodule
+
 class WMFWelcomeInitialViewController: ThemeableViewController {
     @objc var completionBlock: (() -> Void)?
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -15,6 +17,10 @@ class WMFWelcomeInitialViewController: ThemeableViewController {
     
     override func apply(theme: Theme) {
         super.apply(theme: theme)
+        
+        // Note: KotlinNativeで生成したコード
+        print(Greeting().greeting())
+        
         guard viewIfLoaded != nil else {
             return
         }
